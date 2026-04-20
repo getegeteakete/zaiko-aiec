@@ -33,12 +33,12 @@ const CUSTOMERS = [
 ];
 
 const generateOrders = () => [
-  { id: "o1", orderNumber: "ORD-2024-0001", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 10, unitPrice: 1980 }, { productId: "p6", productName: "ボールバルブ 50A", quantity: 5, unitPrice: 680 }], total: 23200, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-15", deliveryDate: "2024-03-16", paymentMethod: "振込" },
-  { id: "o2", orderNumber: "ORD-2024-0002", customerId: "c4", customerName: "鈴木産業株式会社", items: [{ productId: "p3", productName: "銅管 25A", quantity: 20, unitPrice: 4980 }, { productId: "p8", productName: "VLP管 100A", quantity: 5, unitPrice: 3800 }], total: 118600, status: "shipped", paymentStatus: "paid", orderDate: "2024-03-16", deliveryDate: "2024-03-17", paymentMethod: "カード" },
-  { id: "o3", orderNumber: "ORD-2024-0003", customerId: "c2", customerName: "佐藤管工株式会社", items: [{ productId: "p7", productName: "PTFEガスケット 80A", quantity: 3, unitPrice: 2480 }, { productId: "p11", productName: "ウェルドネックフランジ 80A", quantity: 5, unitPrice: 1680 }], total: 15840, status: "processing", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "振込" },
-  { id: "o4", orderNumber: "ORD-2024-0004", customerId: "c5", customerName: "高橋工務店", items: [{ productId: "p9", productName: "ロックウール保温材 50mm", quantity: 15, unitPrice: 1280 }, { productId: "p2", productName: "渦巻ポンプ 2HP", quantity: 20, unitPrice: 298 }], total: 25160, status: "confirmed", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "代引き" },
-  { id: "o5", orderNumber: "ORD-2024-0005", customerId: "c3", customerName: "田中建設株式会社", items: [{ productId: "p10", productName: "90°エルボ 50A", quantity: 8, unitPrice: 580 }], total: 4640, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-14", deliveryDate: "2024-03-15", paymentMethod: "カード" },
-  { id: "o6", orderNumber: "ORD-2024-0006", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p5", productName: "ステンレスボルト M16×60", quantity: 2, unitPrice: 3150 }, { productId: "p12", productName: "ステンレスボルト M16×60", quantity: 3, unitPrice: 1200 }], total: 9900, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-13", deliveryDate: "2024-03-14", paymentMethod: "振込" },
+  { id: "o1", orderNumber: "PO-2024-0001", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 100, unitPrice: 4080 }, { productId: "p4", productName: "ボールバルブ 50A", quantity: 20, unitPrice: 7225 }], total: 552500, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-15", deliveryDate: "2024-01-17", paymentMethod: "銀行振込", carrier: "ヤマト運輸", trackingNumber: "1234-5678-9012" },
+  { id: "o2", orderNumber: "PO-2024-0002", customerId: "c2", customerName: "佐藤管工株式会社", items: [{ productId: "p2", productName: "銅管 25A", quantity: 50, unitPrice: 2816 }, { productId: "p10", productName: "90°エルボ 50A", quantity: 30, unitPrice: 3080 }], total: 233200, status: "発送済", paymentStatus: "決済済", orderDate: "2024-01-16", deliveryDate: "2024-01-18", paymentMethod: "クレジットカード", carrier: "佐川急便", trackingNumber: "9876-5432-1098" },
+  { id: "o3", orderNumber: "PO-2024-0003", customerId: "c3", customerName: "田中建設株式会社", items: [{ productId: "p3", productName: "VLP管 100A", quantity: 200, unitPrice: 2464 }, { productId: "p7", productName: "ウェルドネックフランジ 80A", quantity: 40, unitPrice: 5456 }], total: 711040, status: "処理中", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
+  { id: "o4", orderNumber: "PO-2024-0004", customerId: "c4", customerName: "鈴木産業株式会社", items: [{ productId: "p5", productName: "渦巻ポンプ 2HP", quantity: 2, unitPrice: 115000 }, { productId: "p6", productName: "ロックウール保温材 50mm", quantity: 100, unitPrice: 1656 }], total: 395600, status: "確認待ち", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
+  { id: "o5", orderNumber: "PO-2024-0005", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p8", productName: "PTFEガスケット 80A", quantity: 200, unitPrice: 723 }], total: 144600, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-14", deliveryDate: "2024-01-15", paymentMethod: "銀行振込", carrier: "西濃運輸", trackingNumber: "5555-6666-7777" },
+  { id: "o6", orderNumber: "PO-2024-0006", customerId: "c5", customerName: "高橋工務店", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 30, unitPrice: 4560 }], total: 136800, status: "確認済", paymentStatus: "未決済", orderDate: "2024-01-18", paymentMethod: "現金" },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -83,12 +83,33 @@ const Icons = {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const fmt = (n) => new Intl.NumberFormat("ja-JP").format(n);
 const statusColors = {
-  delivered: { bg: "bg-green-100", text: "text-green-800", label: "配送完了" },
+  delivered: { bg: "bg-green-100", text: "text-green-800", label: "配達完了" },
   shipped: { bg: "bg-blue-100", text: "text-blue-800", label: "配送中" },
   processing: { bg: "bg-yellow-100", text: "text-yellow-800", label: "処理中" },
   confirmed: { bg: "bg-purple-100", text: "text-purple-800", label: "確認済" },
   pending: { bg: "bg-orange-100", text: "text-orange-800", label: "保留" },
   paid: { bg: "bg-green-100", text: "text-green-800", label: "入金済" },
+  "配達完了": { bg: "bg-green-100", text: "text-green-800", label: "配達完了" },
+  "配送中": { bg: "bg-purple-100", text: "text-purple-800", label: "配送中" },
+  "発送済": { bg: "bg-blue-100", text: "text-blue-800", label: "発送済" },
+  "処理中": { bg: "bg-yellow-100", text: "text-yellow-800", label: "処理中" },
+  "確認待ち": { bg: "bg-orange-100", text: "text-orange-800", label: "確認待ち" },
+  "確認済": { bg: "bg-blue-100", text: "text-blue-800", label: "確認済" },
+  "未発送": { bg: "bg-yellow-100", text: "text-yellow-800", label: "未発送" },
+  "キャンセル": { bg: "bg-red-100", text: "text-red-800", label: "キャンセル" },
+  "決済済": { bg: "bg-green-100", text: "text-green-800", label: "決済済" },
+  "未決済": { bg: "bg-yellow-100", text: "text-yellow-800", label: "未決済" },
+  "公開済": { bg: "bg-green-100", text: "text-green-800", label: "公開済" },
+  "下書き": { bg: "bg-gray-100", text: "text-gray-600", label: "下書き" },
+  "緊急": { bg: "bg-red-100", text: "text-red-800", label: "緊急" },
+  "対応中": { bg: "bg-blue-100", text: "text-blue-800", label: "対応中" },
+  "解決済": { bg: "bg-green-100", text: "text-green-800", label: "解決済" },
+  "正常": { bg: "bg-green-100", text: "text-green-800", label: "正常" },
+  "在庫少": { bg: "bg-yellow-100", text: "text-yellow-800", label: "在庫少" },
+  "危険": { bg: "bg-red-100", text: "text-red-800", label: "危険" },
+  "通常": { bg: "bg-gray-100", text: "text-gray-600", label: "通常" },
+  "完了": { bg: "bg-green-100", text: "text-green-800", label: "完了" },
+  "有効": { bg: "bg-green-100", text: "text-green-800", label: "有効" },
 };
 const tierColors = { プラチナ: "bg-gradient-to-r from-slate-400 to-slate-600 text-white", ゴールド: "bg-gradient-to-r from-amber-400 to-amber-600 text-white", シルバー: "bg-gray-200 text-gray-800", スタンダード: "bg-orange-100 text-orange-800" };
 
@@ -550,7 +571,7 @@ const OrdersPage = () => {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 mb-2">
-        {[{ v: "all", l: "すべて" }, { v: "processing", l: "処理中" }, { v: "confirmed", l: "確認済" }, { v: "shipped", l: "配送中" }, { v: "delivered", l: "完了" }].map(f => (
+        {[{ v: "all", l: "すべて" }, { v: "確認待ち", l: "確認待ち" }, { v: "確認済", l: "確認済" }, { v: "処理中", l: "処理中" }, { v: "発送済", l: "発送済" }, { v: "配達完了", l: "配達完了" }].map(f => (
           <button key={f.v} onClick={() => setFilter(f.v)} className={`px-3 py-1.5 rounded-lg text-sm transition ${filter === f.v ? "bg-blue-600 text-white" : "bg-white border text-gray-600"}`}>{f.l}</button>
         ))}
       </div>
@@ -709,7 +730,7 @@ const InventoryPage = () => (
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3 text-sm font-bold">{p.stock}{p.unit}</td>
                   <td className="px-4 py-3">
-                    {p.stock < 35 ? <Badge status="pending" /> : p.stock < 60 ? <span className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-800">低在庫</span> : <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">適正</span>}
+                    {p.stock < 35 ? <Badge status="危険" /> : p.stock < 60 ? <span className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-800">低在庫</span> : <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">適正</span>}
                   </td>
                   <td className="px-4 py-3 w-40">
                     <div className="w-full bg-gray-100 rounded-full h-2"><div className={`h-2 rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} /></div>
@@ -831,7 +852,7 @@ const ShippingPage = () => (
   <div className="space-y-4">
     <div><h2 className="font-semibold text-sm">発送管理</h2><p className="text-xs text-gray-500">発送処理・追跡番号入力・配送状況管理</p></div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客","商品","ステータス","配送業者","追跡番号"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="delivered"?"配達完了":o.status==="shipped"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"ヤマト運輸"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
+    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="配達完了"?"配達完了":o.status==="発送済"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"—"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
   </div>
 );
 
@@ -883,7 +904,7 @@ const AIArticlesPage = () => {
       {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
     </div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["タイトル","カテゴリ","ステータス","文字数","日付"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{arts.map(a=><tr key={a.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{a.title}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-600">{a.category}</span></td><td className="px-4 py-2.5"><Badge status={a.status==="公開済"?"paid":"pending"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{fmt(a.chars)}文字</td><td className="px-4 py-2.5 text-sm text-gray-500">{a.date}</td></tr>)}</tbody></table></div>
+    <tbody>{arts.map(a=><tr key={a.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{a.title}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-600">{a.category}</span></td><td className="px-4 py-2.5"><Badge status={a.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{fmt(a.chars)}文字</td><td className="px-4 py-2.5 text-sm text-gray-500">{a.date}</td></tr>)}</tbody></table></div>
   </div>);
 };
 
@@ -897,7 +918,7 @@ const ChatsPage = () => {
       {[{l:"チャット",v:`${chats.length}件`},{l:"未読メッセージ",v:"3件"},{l:"解決済み",v:`${chats.filter(c=>c.status==="解決済").length}件`},{l:"今月",v:"24件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="bg-white rounded-xl border overflow-hidden divide-y">{chats.map(c=><button key={c.id} onClick={()=>setSel(c)} className={`w-full text-left p-3 hover:bg-gray-50 transition ${sel?.id===c.id?"bg-blue-50":""}`}><div className="flex justify-between"><span className="text-sm font-medium">{c.name}</span><span className="text-xs text-gray-400">{c.time}</span></div><p className="text-xs text-gray-500 truncate">{c.msg}</p><div className="flex gap-1 mt-1"><Badge status={c.priority==="緊急"?"pending":"confirmed"}/><span className="text-xs text-gray-400">担当: {c.assignee}</span></div></button>)}</div>
+      <div className="bg-white rounded-xl border overflow-hidden divide-y">{chats.map(c=><button key={c.id} onClick={()=>setSel(c)} className={`w-full text-left p-3 hover:bg-gray-50 transition ${sel?.id===c.id?"bg-blue-50":""}`}><div className="flex justify-between"><span className="text-sm font-medium">{c.name}</span><span className="text-xs text-gray-400">{c.time}</span></div><p className="text-xs text-gray-500 truncate">{c.msg}</p><div className="flex gap-1 mt-1"><Badge status={c.priority}/><span className="text-xs text-gray-400">担当: {c.assignee}</span></div></button>)}</div>
       <div className="lg:col-span-2 bg-white rounded-xl border p-4 flex flex-col min-h-[400px]">
         {sel ? <>
           <div className="flex items-center justify-between pb-3 border-b mb-3"><div><p className="text-sm font-bold">{sel.name}</p><p className="text-xs text-gray-500">{sel.company}</p></div></div>
@@ -986,10 +1007,10 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 </div>);
 
 // Helper computed values for payments page
-const cn_paid = generateOrders().filter(o=>o.paymentStatus==="paid").reduce((s,o)=>s+o.total,0);
+const cn_paid = generateOrders().filter(o=>o.paymentStatus==="決済済").reduce((s,o)=>s+o.total,0);
 const cn_total = generateOrders().reduce((s,o)=>s+o.total,0);
-const orders_paid = generateOrders().filter(o=>o.paymentStatus==="paid").length;
-const orders_unpaid = generateOrders().filter(o=>o.paymentStatus==="pending").length;
+const orders_paid = generateOrders().filter(o=>o.paymentStatus==="決済済").length;
+const orders_unpaid = generateOrders().filter(o=>o.paymentStatus==="未決済").length;
 const AIChat = () => {
   const { setAiChatOpen } = useApp();
   const [messages, setMessages] = useState([
@@ -1169,16 +1190,6 @@ export default function App() {
 
   return (
     <AppContext.Provider value={ctx}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-        * { font-family: Inter, system-ui, sans-serif; box-sizing: border-box; }
-        body { margin: 0; -webkit-font-smoothing: antialiased; }
-        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-      `}</style>
       {page === "landing" && <LandingPage />}
       {page === "ec" && <ECStore />}
       {page === "cart" && <CartPage />}
