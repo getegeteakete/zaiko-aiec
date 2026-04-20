@@ -120,8 +120,9 @@ const LandingPage = () => {
           <span className="text-xs bg-blue-600 px-2 py-0.5 rounded-full ml-1">AI</span>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("ec")} className="px-4 py-2 text-sm text-white/80 hover:text-white transition">ECストア</button>
-          <button onClick={() => navigate("operator")} className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">管理画面</button>
+          <button onClick={() => navigate("operator")} className="px-4 py-2 text-sm text-white/80 hover:text-white transition">運営者画面</button>
+          <button onClick={() => navigate("buyer")} className="px-4 py-2 text-sm text-white/80 hover:text-white transition">購入者画面</button>
+          <button onClick={() => navigate("ec")} className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">ECストア</button>
         </div>
       </nav>
 
@@ -375,10 +376,18 @@ const OperatorLayout = ({ children }) => {
   const menu = [
     { id: "operator", label: "ダッシュボード", icon: Icons.home },
     { id: "operator/orders", label: "受注管理", icon: Icons.orders },
+    { id: "operator/payments", label: "決済管理", icon: Icons.dollar },
+    { id: "operator/shipping", label: "発送管理", icon: Icons.truck },
     { id: "operator/products", label: "商品管理", icon: Icons.package },
-    { id: "operator/customers", label: "顧客管理", icon: Icons.users },
     { id: "operator/inventory", label: "在庫管理", icon: Icons.inventory },
-    { id: "operator/analytics", label: "分析", icon: Icons.chart },
+    { id: "operator/procurement", label: "仕入管理", icon: Icons.package },
+    { id: "operator/analytics", label: "売上分析", icon: Icons.chart },
+    { id: "operator/customers", label: "顧客管理", icon: Icons.users },
+    { id: "operator/pricing", label: "価格・掛率管理", icon: Icons.dollar },
+    { id: "operator/ai-analytics", label: "AI分析センター", icon: Icons.brain },
+    { id: "operator/ai-articles", label: "AI記事生成", icon: Icons.orders },
+    { id: "operator/chats", label: "チャット管理", icon: Icons.brain },
+    { id: "operator/master", label: "マスタ管理", icon: Icons.settings },
     { id: "operator/settings", label: "設定", icon: Icons.settings },
   ];
 
@@ -399,9 +408,15 @@ const OperatorLayout = ({ children }) => {
           ))}
         </nav>
         {(!collapsed || mobile) && (
-          <div className="p-3 border-t border-white/10">
+          <div className="p-3 border-t border-white/10 space-y-1">
+            <button onClick={() => navigate("buyer")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
+              🛒 購入者画面
+            </button>
             <button onClick={() => navigate("ec")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
-              <Icons.store size={16} /> ECストアを開く
+              🏪 ECストアを開く
+            </button>
+            <button onClick={() => navigate("landing")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
+              🏠 トップに戻る
             </button>
           </div>
         )}
@@ -799,9 +814,182 @@ const SettingsPage = () => (
   </div>
 );
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// AI CHAT (Claude API Integration)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Payments Page
+const PaymentsPage = () => (
+  <div className="space-y-4">
+    <div><h2 className="font-semibold text-sm">決済管理</h2><p className="text-xs text-gray-500">決済状況の確認と管理を行います</p></div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {[{l:"本日の決済額",v:`¥${fmt(cn_paid)}`,c:`${orders_paid}件の決済`},{l:"今月の決済額",v:`¥${fmt(cn_total)}`},{l:"累計決済額",v:`¥${fmt(cn_total*12)}`,c:"累計決済完了"},{l:"確認が必要な決済",v:`${orders_unpaid}件`}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
+    </div>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客名","金額","決済方法","決済状況","決済日時"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.paymentMethod}</td><td className="px-4 py-2.5"><Badge status={o.paymentStatus}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
+  </div>
+);
+
+// Shipping Page
+const ShippingPage = () => (
+  <div className="space-y-4">
+    <div><h2 className="font-semibold text-sm">発送管理</h2><p className="text-xs text-gray-500">発送処理・追跡番号入力・配送状況管理</p></div>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客","商品","ステータス","配送業者","追跡番号"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="delivered"?"配達完了":o.status==="shipped"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"ヤマト運輸"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
+  </div>
+);
+
+// Procurement Page
+const ProcurementPage = () => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">仕入管理</h2><p className="text-xs text-gray-500">発注管理・仕入れ先管理・在庫補充提案</p></div><button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規発注</button></div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {[{l:"発注総数",v:"24件",c:"今月: 8件"},{l:"今月の仕入れ額",v:`¥${fmt(3850000)}`,c:`累計: ¥${fmt(46200000)}`},{l:"処理待ち",v:"3件"},{l:"納品待ち",v:"5件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
+    </div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">仕入れ先一覧</h3>
+      {[{n:"日本製鉄株式会社",c:"田中 太郎",t:"月末締め翌月末払い"},{n:"三菱マテリアル株式会社",c:"佐藤 花子",t:"月末締め翌月15日払い"},{n:"キッツ株式会社",c:"鈴木 一郎",t:"月末締め翌月末払い"},{n:"クボタケミックス株式会社",c:"山田 次郎",t:"月末締め翌月20日払い"}].map((s,i)=><div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2"><div><p className="text-sm font-medium">{s.n}</p><p className="text-xs text-gray-500">{s.c}</p></div><span className="text-xs text-gray-400">{s.t}</span></div>)}
+    </div>
+  </div>
+);
+
+// Pricing Page
+const PricingPage = () => (
+  <div className="space-y-4">
+    <h2 className="font-semibold text-sm">価格・掛率管理</h2>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (ステンレス鋼管)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{CUSTOMERS.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(4800*rate))}</td><td className="px-4 py-2.5"><button className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
+  </div>
+);
+
+// AI Analytics Page
+const AIAnalyticsPage = () => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI分析センター</h2><p className="text-xs text-gray-500">AIによる売上予測・在庫最適化・価格戦略分析</p></div><button className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">AI分析を実行</button></div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {[{l:"売れ筋分析",d:"過去データから売れ筋商品を予測し、在庫戦略を提案します。",c:"#2563EB"},{l:"在庫最適化",d:"需要予測に基づき、適正在庫量と発注タイミングを提案します。",c:"#16A34A"},{l:"価格戦略",d:"市場分析と競合比較から最適な価格設定を提案します。",c:"#F97316"},{l:"利益率改善",d:"コスト分析と販売データから利益率改善策を提案します。",c:"#7C3AED"}].map((card,i)=><div key={i} className="bg-white rounded-xl border p-4 hover:shadow-md transition cursor-pointer"><h3 className="font-semibold text-sm mb-1" style={{color:card.c}}>{card.l}</h3><p className="text-xs text-gray-500 mb-3">{card.d}</p><button className="text-xs font-medium" style={{color:card.c}}>分析を見る →</button></div>)}
+    </div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">AIレコメンデーション</h3>
+      {[{t:"銅管 25A の緊急発注を推奨",d:"現在在庫18本。過去のトレンドから来週需要急増が予測されます。50本の追加発注を推奨。",tag:"欠品防止",c:"#DC2626"},{t:"VLP管 100A の販促キャンペーン実施",d:"在庫回転率が低下。期間限定10%割引で在庫削減と売上増加が見込めます。",tag:"在庫最適化",c:"#F59E0B"},{t:"ステンレス鋼管の価格見直し",d:"競合比較の結果、5%の価格調整で売上15%増加が見込めます。",tag:"売上増加",c:"#16A34A"}].map((r,i)=><div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 border-l-4" style={{borderLeftColor:r.c}}><div className="flex items-center gap-2 mb-1"><span className="text-sm font-bold">{r.t}</span><span className="text-xs px-1.5 py-0.5 rounded" style={{backgroundColor:r.c+"15",color:r.c}}>{r.tag}</span></div><p className="text-xs text-gray-500 mb-2">{r.d}</p><button className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium">実行</button></div>)}
+    </div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">ビジネススコア</h3>
+      <div className="text-center mb-4"><span className="text-4xl font-black text-blue-600">87</span><span className="text-sm text-gray-500 ml-1">/ 100</span></div>
+      <div className="grid grid-cols-4 gap-3">{[{l:"在庫効率",v:82},{l:"価格競争力",v:91},{l:"顧客満足度",v:88},{l:"利益率",v:79}].map((s,i)=><div key={i} className="text-center"><div className="text-lg font-bold">{s.v}</div><div className="text-xs text-gray-500">{s.l}</div><div className="w-full bg-gray-100 rounded-full h-1.5 mt-1"><div className="h-1.5 rounded-full bg-blue-600" style={{width:`${s.v}%`}}/></div></div>)}</div>
+    </div>
+  </div>
+);
+
+// AI Articles Page
+const AIArticlesPage = () => {
+  const arts = [{id:"a1",title:"配管材の選び方とメンテナンス方法",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：ステンレス鋼管シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
+  return (<div className="space-y-4">
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
+    </div>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["タイトル","カテゴリ","ステータス","文字数","日付"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{arts.map(a=><tr key={a.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{a.title}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-600">{a.category}</span></td><td className="px-4 py-2.5"><Badge status={a.status==="公開済"?"paid":"pending"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{fmt(a.chars)}文字</td><td className="px-4 py-2.5 text-sm text-gray-500">{a.date}</td></tr>)}</tbody></table></div>
+  </div>);
+};
+
+// Chats Management Page
+const ChatsPage = () => {
+  const chats = [{id:"ch1",name:"山田太郎",company:"山田設備工業",msg:"在庫の確認をお願いします",time:"2分前",assignee:"佐藤",priority:"緊急",status:"対応中"},{id:"ch2",name:"鈴木花子",company:"鈴木管工",msg:"ありがとうございました！",time:"1時間前",assignee:"佐藤",priority:"完了",status:"解決済"},{id:"ch3",name:"田中一郎",company:"田中建設",msg:"見積もりをお願いします",time:"30分前",assignee:"山田",priority:"通常",status:"対応中"},{id:"ch4",name:"佐藤次郎",company:"佐藤設備",msg:"納期について教えてください",time:"5分前",assignee:"山田",priority:"通常",status:"対応中"}];
+  const [sel,setSel] = useState(null);
+  return (<div className="space-y-4">
+    <div><h2 className="font-semibold text-sm">チャット管理</h2><p className="text-xs text-gray-500">顧客とのチャットセッションの管理と対応</p></div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {[{l:"チャット",v:`${chats.length}件`},{l:"未読メッセージ",v:"3件"},{l:"解決済み",v:`${chats.filter(c=>c.status==="解決済").length}件`},{l:"今月",v:"24件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="bg-white rounded-xl border overflow-hidden divide-y">{chats.map(c=><button key={c.id} onClick={()=>setSel(c)} className={`w-full text-left p-3 hover:bg-gray-50 transition ${sel?.id===c.id?"bg-blue-50":""}`}><div className="flex justify-between"><span className="text-sm font-medium">{c.name}</span><span className="text-xs text-gray-400">{c.time}</span></div><p className="text-xs text-gray-500 truncate">{c.msg}</p><div className="flex gap-1 mt-1"><Badge status={c.priority==="緊急"?"pending":"confirmed"}/><span className="text-xs text-gray-400">担当: {c.assignee}</span></div></button>)}</div>
+      <div className="lg:col-span-2 bg-white rounded-xl border p-4 flex flex-col min-h-[400px]">
+        {sel ? <>
+          <div className="flex items-center justify-between pb-3 border-b mb-3"><div><p className="text-sm font-bold">{sel.name}</p><p className="text-xs text-gray-500">{sel.company}</p></div></div>
+          <div className="flex-1 space-y-3"><div className="bg-gray-100 rounded-2xl rounded-bl-sm px-3 py-2 text-sm max-w-[70%]">{sel.msg}</div><div className="flex justify-end"><div className="bg-blue-600 text-white rounded-2xl rounded-br-sm px-3 py-2 text-sm max-w-[70%]">承知いたしました。確認いたします。少々お待ちください。</div></div></div>
+          <div className="mt-3 flex gap-2"><input placeholder="メッセージを入力..." className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/><button className="p-2 bg-blue-600 text-white rounded-lg"><Icons.send size={16}/></button></div>
+        </> : <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">チャットを選択してください</div>}
+      </div>
+    </div>
+  </div>);
+};
+
+// Master Data Page
+const MasterPage = () => {
+  const [tab,setTab] = useState("商品カテゴリ");
+  const data = {"商品カテゴリ":CATEGORIES.filter(c=>c!=="すべて").map((c,i)=>({code:`CAT-${String(i+1).padStart(3,"0")}`,name:c,status:"有効"})),"配送方法":["トラック便","宅配便","ヤマト運輸","佐川急便","日本郵便","西濃運輸","福山通運","店頭受取"].map((n,i)=>({code:`DLV-${String(i+1).padStart(3,"0")}`,name:n,status:"有効"})),"決済方法":["銀行振込","クレジットカード","現金","コンビニ決済"].map((n,i)=>({code:`PAY-${String(i+1).padStart(3,"0")}`,name:n,status:"有効"}))};
+  const items = data[tab]||[];
+  return (<div className="space-y-4">
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">マスタ管理</h2><p className="text-xs text-gray-500">商品カテゴリ、配送方法、決済方法などのマスタデータ管理</p></div><button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規登録</button></div>
+    <div className="flex gap-2">{["商品カテゴリ","配送方法","決済方法"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-3 py-1.5 rounded-lg text-sm transition ${tab===t?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{t}</button>)}</div>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["コード","名称","ステータス"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{items.map((m,i)=><tr key={i} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-mono text-gray-400">{m.code}</td><td className="px-4 py-2.5 text-sm font-medium">{m.name}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">{m.status}</span></td></tr>)}</tbody></table></div>
+  </div>);
+};
+
+// ━━ BUYER PAGES ━━
+const BuyerLayout = ({children}) => {
+  const { page, navigate, cart } = useApp();
+  const cartCount = cart.reduce((s,c) => s + c.quantity, 0);
+  const menu = [{id:"buyer",l:"トップ"},{id:"buyer/products",l:"商品一覧"},{id:"buyer/orders",l:"注文履歴"},{id:"buyer/billing",l:"請求・決済"},{id:"buyer/chat",l:"チャット相談"},{id:"buyer/account",l:"アカウント"}];
+  return (<div className="min-h-screen bg-gray-50">
+    <header className="bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+      <button onClick={()=>navigate("landing")} className="text-lg font-black text-gray-900">🏭 shopeee</button>
+      <nav className="hidden md:flex items-center gap-1">{menu.map(m=><button key={m.id} onClick={()=>navigate(m.id)} className={`px-3 py-1.5 rounded-lg text-xs transition ${page===m.id?"bg-blue-50 text-blue-600 font-medium":"text-gray-500 hover:bg-gray-50"}`}>{m.l}</button>)}</nav>
+      <div className="flex items-center gap-2">
+        <button onClick={()=>navigate("operator")} className="text-xs text-gray-500">運営者画面</button>
+        <button onClick={()=>navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg"><Icons.cart size={18}/>{cartCount>0&&<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-bold">{cartCount}</span>}</button>
+      </div>
+    </header>
+    <main className="max-w-7xl mx-auto px-4 py-4">{children}</main>
+  </div>);
+};
+
+const BuyerTopPage = () => {
+  const {navigate} = useApp();
+  return (<div className="space-y-6">
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{PRODUCTS.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="text-3xl text-center mb-2">{p.image}</div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
+  </div>);
+};
+
+const BuyerProductsPage = () => {
+  const {addToCart} = useApp();
+  const [cat,setCat] = useState("すべて");
+  const filtered = PRODUCTS.filter(p=>cat==="すべて"||p.category===cat);
+  return (<div className="space-y-4"><h2 className="font-semibold text-sm">商品一覧</h2>
+    <div className="flex gap-2 flex-wrap">{CATEGORIES.map(c=><button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition ${cat===c?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{c}</button>)}</div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{filtered.map(p=><div key={p.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition"><div className="bg-gray-50 flex items-center justify-center text-5xl py-6">{p.image}</div><div className="p-3"><span className="text-xs text-gray-400">{p.category} · {p.sku}</span><h3 className="text-sm font-semibold mt-0.5 mb-1">{p.name}</h3><p className="text-xs text-gray-500 mb-2">{p.description}</p><div className="flex items-center justify-between"><span className="text-sm font-bold text-blue-600">¥{fmt(p.price)}/{p.unit}</span><button onClick={()=>addToCart(p)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><Icons.cart size={14}/></button></div></div></div>)}</div>
+  </div>);
+};
+
+const BuyerOrdersPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">注文履歴</h2>
+  <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","商品","金額","ステータス","注文日"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+  <tbody>{generateOrders().slice(0,3).map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.items[0].productName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5"><Badge status={o.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
+</div>);
+
+const BuyerBillingPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">請求・決済</h2>
+  <div className="grid grid-cols-2 gap-3"><div className="bg-white rounded-xl border p-4"><p className="text-xs text-gray-500 mb-1">今月の請求額</p><p className="text-xl font-bold">¥{fmt(552500)}</p></div><div className="bg-white rounded-xl border p-4"><p className="text-xs text-gray-500 mb-1">未払い</p><p className="text-xl font-bold text-orange-600">¥{fmt(0)}</p></div></div></div>);
+
+const BuyerChatPage = () => {
+  const [msgs,setMsgs] = useState([{role:"ai",text:"こんにちは！WholesaleAI アシスタントです。ご質問やお困りのことがございましたら、お気軽にお申し付けください。"}]);
+  const [input,setInput] = useState("");
+  const send = () => { if(!input.trim())return; setMsgs(p=>[...p,{role:"user",text:input}]); const q=input; setInput(""); setTimeout(()=>{ let r="ご質問ありがとうございます。お調べして回答いたします。"; if(q.includes("在庫")||q.includes("納期"))r="商品の在庫状況をお調べいたします。商品名またはSKUコードをお教えいただけますか？"; if(q.includes("注文")||q.includes("発送"))r="注文番号をお教えいただければ、詳細をお調べいたします。"; if(q.includes("価格")||q.includes("見積"))r="対象商品と数量をお教えいただければ、お見積もりを作成いたします。"; setMsgs(p=>[...p,{role:"ai",text:r}]); },800); };
+  return (<div className="space-y-4"><h2 className="font-semibold text-sm">チャット相談</h2>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">{["担当者に相談","AIに相談","注文・発送について","在庫・納期について"].map(q=><button key={q} className="px-3 py-2 bg-white border rounded-lg text-xs hover:bg-gray-50">{q}</button>)}</div>
+    <div className="bg-white rounded-xl border p-4 flex flex-col" style={{height:400}}>
+      <div className="flex items-center gap-2 pb-3 border-b mb-3"><Icons.brain size={18} className="text-purple-600"/><div><p className="text-sm font-bold">AI アシスタント</p><p className="text-xs text-green-600">オンライン</p></div></div>
+      <div className="flex-1 overflow-y-auto space-y-3 mb-3">{msgs.map((m,i)=><div key={i} className={`flex ${m.role==="user"?"justify-end":"justify-start"}`}><div className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${m.role==="user"?"bg-blue-600 text-white rounded-br-sm":"bg-gray-100 rounded-bl-sm"}`}>{m.text}</div></div>)}</div>
+      <div className="flex gap-2"><input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="メッセージを入力..." className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/><button onClick={send} className="p-2 bg-blue-600 text-white rounded-lg"><Icons.send size={16}/></button></div>
+    </div>
+  </div>);
+};
+
+const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">アカウント</h2>
+  <div className="bg-white rounded-xl border p-5 max-w-xl">{[{l:"会社名",v:"山田設備工業株式会社"},{l:"担当者",v:"山田 太郎"},{l:"メール",v:"yamada@yamada-setsubi.jp"},{l:"電話番号",v:"03-1234-5678"},{l:"住所",v:"東京都品川区大崎1-2-3"},{l:"ティア",v:"プラチナ"}].map((f,i)=><div key={i} className="flex items-center justify-between py-2 border-b last:border-0"><span className="text-sm text-gray-500">{f.l}</span><span className="text-sm font-medium">{f.v}</span></div>)}</div>
+</div>);
+
+// Helper computed values for payments page
+const cn_paid = generateOrders().filter(o=>o.paymentStatus==="paid").reduce((s,o)=>s+o.total,0);
+const cn_total = generateOrders().reduce((s,o)=>s+o.total,0);
+const orders_paid = generateOrders().filter(o=>o.paymentStatus==="paid").length;
+const orders_unpaid = generateOrders().filter(o=>o.paymentStatus==="pending").length;
 const AIChat = () => {
   const { setAiChatOpen } = useApp();
   const [messages, setMessages] = useState([
@@ -925,13 +1113,34 @@ const OperatorPage = () => {
   const pageMap = {
     "operator": <DashboardPage />,
     "operator/orders": <OrdersPage />,
+    "operator/payments": <PaymentsPage />,
+    "operator/shipping": <ShippingPage />,
     "operator/products": <ProductsPage />,
     "operator/customers": <CustomersPage />,
     "operator/inventory": <InventoryPage />,
+    "operator/procurement": <ProcurementPage />,
     "operator/analytics": <AnalyticsPage />,
+    "operator/pricing": <PricingPage />,
+    "operator/ai-analytics": <AIAnalyticsPage />,
+    "operator/ai-articles": <AIArticlesPage />,
+    "operator/chats": <ChatsPage />,
+    "operator/master": <MasterPage />,
     "operator/settings": <SettingsPage />,
   };
   return <OperatorLayout>{pageMap[page] || <DashboardPage />}</OperatorLayout>;
+};
+
+const BuyerPage = () => {
+  const { page } = useApp();
+  const pageMap = {
+    "buyer": <BuyerTopPage />,
+    "buyer/products": <BuyerProductsPage />,
+    "buyer/orders": <BuyerOrdersPage />,
+    "buyer/billing": <BuyerBillingPage />,
+    "buyer/chat": <BuyerChatPage />,
+    "buyer/account": <BuyerAccountPage />,
+  };
+  return <BuyerLayout>{pageMap[page] || <BuyerTopPage />}</BuyerLayout>;
 };
 
 export default function App() {
@@ -974,6 +1183,7 @@ export default function App() {
       {page === "ec" && <ECStore />}
       {page === "cart" && <CartPage />}
       {page.startsWith("operator") && <OperatorPage />}
+      {page.startsWith("buyer") && <BuyerPage />}
     </AppContext.Provider>
   );
 }
