@@ -119,92 +119,141 @@ const Badge = ({ status }) => {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// LANDING PAGE
+// TOP PAGE — BtoB EC STOREFRONT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const LandingPage = () => {
-  const { navigate } = useApp();
-  const features = [
-    { icon: "📊", title: "AIダッシュボード", desc: "売上・在庫・顧客動向をAIがリアルタイム分析" },
-    { icon: "🛒", title: "EC受発注", desc: "BtoB向け資材EC。ワンクリックで発注・再注文" },
-    { icon: "🤖", title: "AIエージェント", desc: "在庫提案・需要予測・業務自動化をAIが支援" },
-    { icon: "📦", title: "在庫・配送管理", desc: "リアルタイム在庫管理と配送状況のトラッキング" },
-    { icon: "💳", title: "決済・請求", desc: "複数決済対応。請求書自動発行・入金管理" },
-    { icon: "📈", title: "分析レポート", desc: "売上トレンド・ABC分析・顧客LTV自動算出" },
-  ];
+  const { navigate, addToCart, cart } = useApp();
+  const [selectedCat, setSelectedCat] = useState("すべて");
+  const [searchQ, setSearchQ] = useState("");
+  const cartCount = cart.reduce((s, c) => s + c.quantity, 0);
+  const filtered = PRODUCTS.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (!searchQ || p.name.includes(searchQ) || p.sku.includes(searchQ)));
+  const featured = PRODUCTS.filter(p => p.stock > 50).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-white overflow-hidden">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 sm:px-12 py-4 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-black tracking-tight">🏭 shopeee</span>
-          <span className="text-xs bg-blue-600 px-2 py-0.5 rounded-full ml-1">AI</span>
+    <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
+      {/* ── Top Bar ── */}
+      <div className="bg-industrial text-white/70 text-xs py-1.5 px-4 flex items-center justify-between">
+        <span>法人向け配管材・資材の卸売EC ｜ 最短翌日配送 ｜ 掛売対応</span>
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
+          <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ログイン</button>
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("operator")} className="px-4 py-2 text-sm text-white/80 hover:text-white transition">運営者画面</button>
-          <button onClick={() => navigate("buyer")} className="px-4 py-2 text-sm text-white/80 hover:text-white transition">購入者画面</button>
-          <button onClick={() => navigate("ec")} className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">ECストア</button>
-        </div>
-      </nav>
+      </div>
 
-      {/* Hero */}
-      <section className="relative px-6 sm:px-12 py-20 sm:py-32 text-center">
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="absolute rounded-full bg-blue-500/10" style={{ width: Math.random() * 300 + 50, height: Math.random() * 300 + 50, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${i * 0.3}s` }} />
+      {/* ── Header ── */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="container flex items-center justify-between py-3 gap-4">
+          <button onClick={() => navigate("landing")} className="flex items-center gap-2 shrink-0">
+            <div className="w-8 h-8 rounded bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-display font-black text-sm">S</div>
+            <span className="font-display font-extrabold text-xl tracking-tight" style={{color:'var(--navy-900)'}}>shopeee</span>
+            <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{background:'var(--amber-500)',color:'#fff'}}>卸売</span>
+          </button>
+          <div className="flex-1 max-w-xl relative hidden sm:block">
+            <Icons.search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="商品名・型番・SKUで検索..." className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400" style={{borderRadius:'var(--radius)'}} />
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("buyer/chat")} className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded transition" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><Icons.brain size={14} /> AIに相談</button>
+            <button onClick={() => navigate("buyer")} className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded transition hover:bg-gray-100" style={{color:'var(--slate-600)'}}><Icons.orders size={14} /> 注文履歴</button>
+            <button onClick={() => navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded transition">
+              <Icons.cart size={20} />
+              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold" style={{background:'var(--amber-500)'}}>{cartCount}</span>}
+            </button>
+          </div>
+        </div>
+        {/* Category Bar */}
+        <div className="container pb-2 flex gap-1 overflow-x-auto">
+          {CATEGORIES.map(c => (
+            <button key={c} onClick={() => setSelectedCat(c)} className={`px-3 py-1 rounded text-xs font-medium whitespace-nowrap transition ${selectedCat === c ? "text-white" : "text-gray-600 hover:bg-gray-100"}`} style={selectedCat === c ? {background:'var(--steel-500)'} : {}}>{c}</button>
           ))}
         </div>
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <div className="inline-block mb-6 px-4 py-1.5 border border-blue-400/30 rounded-full text-sm text-blue-300">
-            ✨ 配管材・資材のオンライン卸売プラットフォーム
+      </header>
+
+      {/* ── Hero Banner ── */}
+      <section className="hero-banner py-10 sm:py-14 px-4 relative">
+        <div className="container relative z-10 flex flex-col sm:flex-row items-center gap-8">
+          <div className="flex-1">
+            <div className="inline-block mb-3 px-3 py-1 rounded text-xs font-semibold" style={{background:'rgba(212,147,10,.15)',color:'var(--amber-400)'}}>法人専用 ｜ 掛率対応 ｜ AI在庫提案</div>
+            <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
+              配管材・資材の<br/><span className="text-gradient">プロ向け卸売EC</span>
+            </h1>
+            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">ステンレス鋼管・バルブ・ポンプ・継手など、10,000点以上の配管資材をオンラインで。AIが最適な在庫提案と価格をご案内します。</p>
+            <div className="flex gap-3">
+              <button onClick={() => document.getElementById('products')?.scrollIntoView({behavior:'smooth'})} className="btn-primary px-6 py-3 text-sm font-bold" style={{background:'var(--amber-500)'}}>商品を見る ↓</button>
+              <button onClick={() => navigate("buyer")} className="px-6 py-3 border border-white/20 text-white/80 rounded text-sm font-medium hover:bg-white/10 transition" style={{borderRadius:'var(--radius)'}}>マイページ</button>
+            </div>
           </div>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 tracking-tight">
-            資材調達を<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400">AIでスマート</span>に
-          </h1>
-          <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            配管材・資材の発注・在庫・顧客管理をAIがサポート。<br />
-            卸売業務を劇的に効率化するEnterprise SaaSプラットフォーム
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => navigate("ec")} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-lg font-bold transition shadow-lg shadow-blue-600/30">
-              ECストアを見る →
-            </button>
-            <button onClick={() => navigate("operator")} className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-lg font-medium transition">
-              管理画面デモ
-            </button>
+          <div className="hidden lg:grid grid-cols-2 gap-3 w-80">
+            {featured.map((p, i) => (
+              <div key={p.id} className="bg-white/5 backdrop-blur border border-white/10 rounded p-3 animate-fade-up" style={{animationDelay:`${i*0.1}s`, borderRadius:'var(--radius)'}}>
+                <div className="text-3xl text-center mb-1">{p.image}</div>
+                <p className="text-xs text-white/70 truncate">{p.name}</p>
+                <p className="text-xs font-bold text-amber-400">¥{fmt(p.price)}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="px-6 sm:px-12 py-20">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">主な機能</h2>
-        <p className="text-white/50 text-center mb-12">AIが店舗運営のすべてをサポートします</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {features.map((f, i) => (
-            <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-blue-500/50 hover:bg-white/10 transition group cursor-pointer" style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className="text-4xl mb-4">{f.icon}</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-blue-400 transition">{f.title}</h3>
-              <p className="text-sm text-white/50 leading-relaxed">{f.desc}</p>
+      {/* ── KPI Strip ── */}
+      <div className="container -mt-5 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        {[{v:"10,000+",l:"取扱商品数",icon:"📦"},{v:"翌日",l:"最短配送",icon:"🚛"},{v:"24h",l:"受注対応",icon:"⏰"},{v:"AI",l:"在庫自動提案",icon:"🤖"}].map((k,i) => (
+          <div key={i} className="card p-4 flex items-center gap-3 animate-fade-up" style={{animationDelay:`${i*0.08}s`}}>
+            <span className="text-2xl">{k.icon}</span>
+            <div><p className="font-display font-extrabold text-lg" style={{color:'var(--navy-900)'}}>{k.v}</p><p className="text-xs" style={{color:'var(--slate-400)'}}>{k.l}</p></div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Products Section ── */}
+      <section id="products" className="container pb-12">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="font-display font-bold text-lg" style={{color:'var(--navy-900)'}}>商品一覧</h2>
+            <p className="text-xs" style={{color:'var(--slate-400)'}}>{filtered.length}件の商品</p>
+          </div>
+          <div className="relative sm:hidden">
+            <Icons.search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"/>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="検索..." className="pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs w-40 focus:outline-none"/>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          {filtered.map((p, i) => (
+            <div key={p.id} className="product-card cursor-pointer animate-fade-up" style={{animationDelay:`${i*0.04}s`}} onClick={() => navigate("ec")}>
+              <div className="bg-gray-50 flex items-center justify-center text-4xl sm:text-5xl py-6 relative">
+                {p.image}
+                {p.stock < 30 && <span className="absolute top-2 right-2 text-xs px-1.5 py-0.5 rounded font-semibold" style={{background:'var(--danger)',color:'#fff',fontSize:'10px'}}>残少</span>}
+              </div>
+              <div className="p-3">
+                <p className="text-xs mb-0.5" style={{color:'var(--slate-400)'}}>{p.category} ｜ {p.sku}</p>
+                <h3 className="text-sm font-semibold mb-1 line-clamp-2" style={{color:'var(--navy-900)'}}>{p.name}</h3>
+                <p className="text-xs mb-2 line-clamp-2" style={{color:'var(--slate-400)'}}>{p.description}</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-display font-bold text-base" style={{color:'var(--steel-500)'}}>¥{fmt(p.price)}</span>
+                    <span className="text-xs ml-0.5" style={{color:'var(--slate-400)'}}>/{p.unit}</span>
+                  </div>
+                  <button onClick={e => {e.stopPropagation(); addToCart(p);}} className="p-1.5 rounded transition hover:shadow" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><Icons.cart size={14}/></button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
+        {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">該当する商品がありません</div>}
       </section>
 
-      {/* CTA */}
-      <section className="px-6 sm:px-12 py-20 text-center">
-        <div className="max-w-3xl mx-auto p-10 rounded-2xl bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">今すぐ始めましょう</h2>
-          <p className="text-white/60 mb-8">14日間無料トライアル。クレジットカード不要。</p>
-          <button onClick={() => navigate("operator")} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-lg font-bold transition">
-            無料で始める
-          </button>
+      {/* ── Footer ── */}
+      <footer className="bg-industrial text-white/40 py-8 px-4 relative">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+          <div className="flex items-center gap-2"><div className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-white font-display font-bold text-xs">S</div><span className="font-display font-bold text-sm text-white/60">shopeee</span></div>
+          <div className="flex gap-4 text-xs">
+            <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ページ</button>
+            <button onClick={() => navigate("buyer")} className="hover:text-white transition">マイページ</button>
+            <button onClick={() => navigate("buyer/chat")} className="hover:text-white transition">お問い合わせ</button>
+          </div>
+          <p className="text-xs">© 2024 shopeee Inc.</p>
         </div>
-      </section>
-
-      <footer className="px-6 py-8 border-t border-white/10 text-center text-white/30 text-sm">
-        © 2024 shopeee - 店舗管理AIアシスト
       </footer>
     </div>
   );
