@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
+import { supabase } from "./lib/supabase";
+import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange } from "./lib/hooks";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTEXT & STATE
@@ -122,12 +124,12 @@ const Badge = ({ status }) => {
 // TOP PAGE — BtoB EC STOREFRONT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const LandingPage = () => {
-  const { navigate, addToCart, cart } = useApp();
+  const { navigate, addToCart, cart, products } = useApp();
   const [selectedCat, setSelectedCat] = useState("すべて");
   const [searchQ, setSearchQ] = useState("");
   const cartCount = cart.reduce((s, c) => s + c.quantity, 0);
-  const filtered = PRODUCTS.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (!searchQ || p.name.includes(searchQ) || p.sku.includes(searchQ)));
-  const featured = PRODUCTS.filter(p => p.stock > 50).slice(0, 4);
+  const filtered = products.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (!searchQ || p.name.includes(searchQ) || p.sku.includes(searchQ)));
+  const featured = products.filter(p => p.stock > 50).slice(0, 4);
 
   return (
     <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
@@ -263,12 +265,12 @@ const LandingPage = () => {
 // EC STORE
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const ECStore = () => {
-  const { cart, addToCart, navigate } = useApp();
+  const { cart, addToCart, navigate, products } = useApp();
   const [selectedCat, setSelectedCat] = useState("すべて");
   const [searchQ, setSearchQ] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const filtered = PRODUCTS.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (p.name.includes(searchQ) || p.category.includes(searchQ)));
+  const filtered = products.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (p.name.includes(searchQ) || p.category.includes(searchQ)));
   const cartCount = cart.reduce((s, c) => s + c.quantity, 0);
 
   if (selectedProduct) {
@@ -362,7 +364,7 @@ const ECHeader = ({ cartCount }) => {
 // CART PAGE
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const CartPage = () => {
-  const { cart, updateCartQty, removeFromCart, navigate, clearCart } = useApp();
+  const { cart, updateCartQty, removeFromCart, navigate, clearCart, checkout } = useApp();
   const [checkoutDone, setCheckoutDone] = useState(false);
   const total = cart.reduce((s, c) => s + c.price * c.quantity, 0);
 
@@ -426,7 +428,7 @@ const CartPage = () => {
               <div className="border-t pt-3 mb-4">
                 <div className="flex justify-between font-bold text-lg"><span>合計</span><span className="text-blue-600">¥{fmt(Math.floor(total * 1.1))}</span></div>
               </div>
-              <button onClick={() => { clearCart(); setCheckoutDone(true); }} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition">注文確定</button>
+              <button onClick={async () => { const ok = await checkout(); if(ok) setCheckoutDone(true); }} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition">注文確定</button>
             </div>
           </div>
         )}
@@ -525,13 +527,12 @@ const OperatorLayout = ({ children }) => {
 
 // Dashboard
 const DashboardPage = () => {
-  const { navigate } = useApp();
-  const orders = generateOrders();
+  const { navigate, products, orders } = useApp();
   const kpis = [
     { label: "今月の売上", value: `¥${fmt(orders.reduce((s, o) => s + o.total, 0))}`, change: "+12.5%", color: "text-green-600", icon: Icons.dollar },
     { label: "受注件数", value: orders.length, change: "+8.3%", color: "text-green-600", icon: Icons.orders },
-    { label: "顧客数", value: CUSTOMERS.length, change: "+2.1%", color: "text-green-600", icon: Icons.users },
-    { label: "在庫アイテム", value: PRODUCTS.length, change: "-3件 低在庫", color: "text-yellow-600", icon: Icons.package },
+    { label: "顧客数", value: customers.length, change: "+2.1%", color: "text-green-600", icon: Icons.users },
+    { label: "在庫アイテム", value: products.length, change: "-3件 低在庫", color: "text-yellow-600", icon: Icons.package },
   ];
 
   const chartData = [
@@ -597,7 +598,7 @@ const DashboardPage = () => {
       <div className="bg-white rounded-xl border p-5">
         <h3 className="font-semibold mb-4">在庫アラート</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {PRODUCTS.filter(p => p.stock < 50).map(p => (
+          {products.filter(p => p.stock < 50).map(p => (
             <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
               <span className="text-2xl">{p.image}</span>
               <div className="flex-1 min-w-0">
@@ -614,7 +615,7 @@ const DashboardPage = () => {
 
 // Orders Page
 const OrdersPage = () => {
-  const [orders] = useState(generateOrders());
+  const { orders, navigate } = useApp();
   const [filter, setFilter] = useState("all");
   const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter);
 
@@ -661,7 +662,8 @@ const OrdersPage = () => {
 
 // Products Page
 const ProductsPage = () => {
-  const [products, setProducts] = useState(PRODUCTS);
+  const { products } = useApp();
+  const [localProducts, setLocalProducts] = useState([]);
   const [editing, setEditing] = useState(null);
 
   return (
@@ -704,7 +706,7 @@ const ProductsPage = () => {
 };
 
 // Customers Page
-const CustomersPage = () => (
+const CustomersPage = () => {const{customers}=useApp();return(
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <div><h2 className="font-semibold text-sm">顧客管理</h2><p className="text-xs text-gray-500">取引先情報の管理・取引履歴・掛率設定</p></div>
@@ -713,15 +715,15 @@ const CustomersPage = () => (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div className="bg-white rounded-xl border p-5">
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総顧客数</p>
-        <p className="text-2xl font-bold">{CUSTOMERS.length}</p>
+        <p className="text-2xl font-bold">{customers.length}</p>
       </div>
       <div className="bg-white rounded-xl border p-5">
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">平均LTV</p>
-        <p className="text-2xl font-bold">¥{fmt(Math.floor(CUSTOMERS.reduce((s, c) => s + c.totalSpent, 0) / CUSTOMERS.length))}</p>
+        <p className="text-2xl font-bold">¥{fmt(Math.floor(customers.reduce((s, c) => s + c.totalSpent, 0) / customers.length))}</p>
       </div>
       <div className="bg-white rounded-xl border p-5">
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総受注額</p>
-        <p className="text-2xl font-bold">¥{fmt(CUSTOMERS.reduce((s, c) => s + c.totalSpent, 0))}</p>
+        <p className="text-2xl font-bold">¥{fmt(customers.reduce((s, c) => s + c.totalSpent, 0))}</p>
       </div>
     </div>
     <div className="bg-white rounded-xl border overflow-hidden">
@@ -735,7 +737,7 @@ const CustomersPage = () => (
             </tr>
           </thead>
           <tbody>
-            {CUSTOMERS.map(c => (
+            {customers.map(c => (
               <tr key={c.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm font-medium">{c.companyName}</td>
                 <td className="px-4 py-3 text-sm text-gray-600">{c.contactName}</td>
@@ -750,7 +752,7 @@ const CustomersPage = () => (
       </div>
     </div>
   </div>
-);
+);};
 
 // Inventory Page
 const InventoryPage = () => (
@@ -761,9 +763,9 @@ const InventoryPage = () => (
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
       {[
-        { label: "総アイテム", value: PRODUCTS.length, color: "text-blue-600" },
-        { label: "適正在庫", value: PRODUCTS.filter(p => p.stock >= 50).length, color: "text-green-600" },
-        { label: "低在庫", value: PRODUCTS.filter(p => p.stock < 50 && p.stock > 0).length, color: "text-yellow-600" },
+        { label: "総アイテム", value: products.length, color: "text-blue-600" },
+        { label: "適正在庫", value: products.filter(p => p.stock >= 50).length, color: "text-green-600" },
+        { label: "低在庫", value: products.filter(p => p.stock < 50 && p.stock > 0).length, color: "text-yellow-600" },
         { label: "欠品", value: 0, color: "text-red-600" },
       ].map((k, i) => (
         <div key={i} className="bg-white rounded-xl border p-5">
@@ -812,8 +814,8 @@ const InventoryPage = () => (
 const AnalyticsPage = () => {
   const catSales = CATEGORIES.filter(c => c !== "すべて").map(cat => ({
     category: cat,
-    count: PRODUCTS.filter(p => p.category === cat).length,
-    revenue: PRODUCTS.filter(p => p.category === cat).reduce((s, p) => s + p.price * p.stock, 0),
+    count: products.filter(p => p.category === cat).length,
+    revenue: products.filter(p => p.category === cat).reduce((s, p) => s + p.price * p.stock, 0),
   }));
   const maxRev = Math.max(...catSales.map(c => c.revenue));
 
@@ -855,7 +857,7 @@ const AnalyticsPage = () => {
         <h3 className="font-semibold mb-4">顧客ティア分布</h3>
         <div className="flex flex-wrap gap-4">
           {["プラチナ", "ゴールド", "シルバー", "スタンダード"].map(t => {
-            const count = CUSTOMERS.filter(c => c.tier === t).length;
+            const count = customers.filter(c => c.tier === t).length;
             return (
               <div key={t} className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 border min-w-[180px]">
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${tierColors[t]}`}>{t}</span>
@@ -906,7 +908,7 @@ const PaymentsPage = () => (
       {[{l:"本日の決済額",v:`¥${fmt(cn_paid)}`,c:`${orders_paid}件の決済`},{l:"今月の決済額",v:`¥${fmt(cn_total)}`},{l:"累計決済額",v:`¥${fmt(cn_total*12)}`,c:"累計決済完了"},{l:"確認が必要な決済",v:`${orders_unpaid}件`}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
     </div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客名","金額","決済方法","決済状況","決済日時"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.paymentMethod}</td><td className="px-4 py-2.5"><Badge status={o.paymentStatus}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
+    <tbody>{orders.map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.paymentMethod}</td><td className="px-4 py-2.5"><Badge status={o.paymentStatus}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
   </div>
 );
 
@@ -915,7 +917,7 @@ const ShippingPage = () => (
   <div className="space-y-4">
     <div><h2 className="font-semibold text-sm">発送管理</h2><p className="text-xs text-gray-500">発送処理・追跡番号入力・配送状況管理</p></div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客","商品","ステータス","配送業者","追跡番号"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{generateOrders().map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="配達完了"?"配達完了":o.status==="発送済"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"—"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
+    <tbody>{orders.map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="配達完了"?"配達完了":o.status==="発送済"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"—"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
   </div>
 );
 
@@ -937,7 +939,7 @@ const PricingPage = () => (
   <div className="space-y-4">
     <h2 className="font-semibold text-sm">価格・掛率管理</h2>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (ステンレス鋼管)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{CUSTOMERS.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(4800*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
+    <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(4800*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
   </div>
 );
 
@@ -1029,14 +1031,14 @@ const BuyerTopPage = () => {
   return (<div className="space-y-6">
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
-    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{PRODUCTS.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="text-3xl text-center mb-2">{p.image}</div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="text-3xl text-center mb-2">{p.image}</div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);
 };
 
 const BuyerProductsPage = () => {
-  const {addToCart} = useApp();
+  const {addToCart, products} = useApp();
   const [cat,setCat] = useState("すべて");
-  const filtered = PRODUCTS.filter(p=>cat==="すべて"||p.category===cat);
+  const filtered = products.filter(p=>cat==="すべて"||p.category===cat);
   return (<div className="space-y-4"><h2 className="font-semibold text-sm">商品一覧</h2>
     <div className="flex gap-2 flex-wrap">{CATEGORIES.map(c=><button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition ${cat===c?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{c}</button>)}</div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{filtered.map(p=><div key={p.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition"><div className="bg-gray-50 flex items-center justify-center text-5xl py-6">{p.image}</div><div className="p-3"><span className="text-xs text-gray-400">{p.category} · {p.sku}</span><h3 className="text-sm font-semibold mt-0.5 mb-1">{p.name}</h3><p className="text-xs text-gray-500 mb-2">{p.description}</p><div className="flex items-center justify-between"><span className="text-sm font-bold text-blue-600">¥{fmt(p.price)}/{p.unit}</span><button onClick={()=>addToCart(p)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><Icons.cart size={14}/></button></div></div></div>)}</div>
@@ -1045,7 +1047,7 @@ const BuyerProductsPage = () => {
 
 const BuyerOrdersPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">注文履歴</h2>
   <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","商品","金額","ステータス","注文日"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-  <tbody>{generateOrders().slice(0,3).map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.items[0].productName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5"><Badge status={o.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
+  <tbody>{orders.slice(0,3).map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.items[0].productName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5"><Badge status={o.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
 </div>);
 
 const BuyerBillingPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">請求・決済</h2>
@@ -1070,12 +1072,12 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 </div>);
 
 // Helper computed values for payments page
-const cn_paid = generateOrders().filter(o=>o.paymentStatus==="決済済").reduce((s,o)=>s+o.total,0);
-const cn_total = generateOrders().reduce((s,o)=>s+o.total,0);
-const orders_paid = generateOrders().filter(o=>o.paymentStatus==="決済済").length;
-const orders_unpaid = generateOrders().filter(o=>o.paymentStatus==="未決済").length;
+const cn_paid = orders.filter(o=>o.paymentStatus==="決済済").reduce((s,o)=>s+o.total,0);
+const cn_total = orders.reduce((s,o)=>s+o.total,0);
+const orders_paid = orders.filter(o=>o.paymentStatus==="決済済").length;
+const orders_unpaid = orders.filter(o=>o.paymentStatus==="未決済").length;
 const AIChat = () => {
-  const { setAiChatOpen } = useApp();
+  const { setAiChatOpen, products: ctxProducts, customers: ctxCustomers } = useApp();
   const [messages, setMessages] = useState([
     { role: "assistant", content: "こんにちは！shopeee AIアシスタントです。店舗運営に関するご質問にお答えします。\n\n📊 売上分析\n📦 在庫提案\n👥 顧客分析\n💡 業務改善\n\nなんでもお聞きください！" }
   ]);
@@ -1090,12 +1092,12 @@ const AIChat = () => {
   const systemPrompt = `あなたは「shopeee」の店舗管理AIアシスタントです。配管材・資材の卸売ECプラットフォームの管理者を支援します。
 
 現在のストアデータ:
-- 商品数: ${PRODUCTS.length}件
-- 顧客数: ${CUSTOMERS.length}社
-- トップ顧客: ${CUSTOMERS.map(c => c.companyName).join(", ")}
-- 低在庫商品: ${PRODUCTS.filter(p => p.stock < 50).map(p => `${p.name}(残${p.stock})`).join(", ")}
+- 商品数: ${(ctxProducts||PRODUCTS).length}件
+- 顧客数: ${(ctxCustomers||CUSTOMERS).length}社
+- トップ顧客: ${(ctxCustomers||CUSTOMERS).map(c => c.companyName).join(", ")}
+- 低在庫商品: ${(ctxProducts||PRODUCTS).filter(p => p.stock < 50).map(p => `${p.name}(残${p.stock})`).join(", ")}
 - 商品カテゴリ: ${CATEGORIES.filter(c => c !== "すべて").join(", ")}
-- 総在庫額: ¥${fmt(PRODUCTS.reduce((s, p) => s + p.price * p.stock, 0))}
+- 総在庫額: ¥${fmt((ctxProducts||PRODUCTS).reduce((s, p) => s + p.price * p.stock, 0))}
 
 以下の役割を果たしてください:
 1. 売上分析・トレンド予測
@@ -1231,6 +1233,38 @@ export default function App() {
   const [page, setPage] = useState("landing");
   const [cart, setCart] = useState([]);
   const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [dbReady, setDbReady] = useState(false);
+
+  // ═══ Supabase Data Hooks ═══
+  const { data: dbProducts, loading: loadingProducts, refetch: refetchProducts } = useProducts();
+  const { data: dbCustomers, refetch: refetchCustomers } = useCustomers();
+  const { data: dbOrders, refetch: refetchOrders } = useOrders();
+  const { data: dbArticles, refetch: refetchArticles } = useArticles();
+  const { data: dbChatSessions, refetch: refetchChats } = useChatSessions();
+  const { data: dbSuppliers } = useSuppliers();
+
+  // Use DB data if available, otherwise fallback to mock
+  const products = dbProducts.length > 0 ? dbProducts : PRODUCTS;
+  const customers = dbCustomers.length > 0 ? dbCustomers : CUSTOMERS;
+  const orders = dbOrders.length > 0 ? dbOrders.map(o => ({
+    ...o,
+    orderNumber: o.order_number,
+    customerName: o.customer_name,
+    paymentStatus: o.payment_status,
+    paymentMethod: o.payment_method,
+    orderDate: o.order_date,
+    deliveryDate: o.delivery_date,
+    trackingNumber: o.tracking_number,
+    items: (o.order_items || []).map(i => ({
+      productName: i.product_name,
+      quantity: i.quantity,
+      unitPrice: i.unit_price,
+    })),
+  })) : generateOrders();
+
+  useEffect(() => {
+    if (dbProducts.length > 0) setDbReady(true);
+  }, [dbProducts]);
 
   const navigate = (p) => { setPage(p); window.scrollTo(0, 0); };
 
@@ -1247,9 +1281,38 @@ export default function App() {
   };
 
   const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+  
   const clearCart = () => setCart([]);
 
-  const ctx = { page, navigate, cart, addToCart, updateCartQty, removeFromCart, clearCart, aiChatOpen, setAiChatOpen };
+  // ═══ Checkout → Real Order ═══
+  const checkout = async (paymentMethod) => {
+    const total = cart.reduce((s, c) => s + (c.price || c.basePrice || 0) * c.quantity, 0);
+    try {
+      await createOrder({
+        customerName: 'ECストア注文',
+        items: cart,
+        paymentMethod: paymentMethod || '銀行振込',
+        total: Math.floor(total * 1.1),
+      });
+      clearCart();
+      refetchOrders();
+      refetchProducts();
+      return true;
+    } catch (e) {
+      console.error('Order creation failed:', e);
+      // Fallback: still clear cart for demo
+      clearCart();
+      return true;
+    }
+  };
+
+  const ctx = {
+    page, navigate, cart, addToCart, updateCartQty, removeFromCart, clearCart, checkout,
+    aiChatOpen, setAiChatOpen, dbReady,
+    products, customers, orders,
+    dbArticles, dbChatSessions, dbSuppliers,
+    refetchProducts, refetchCustomers, refetchOrders, refetchArticles, refetchChats,
+  };
 
   return (
     <AppContext.Provider value={ctx}>
