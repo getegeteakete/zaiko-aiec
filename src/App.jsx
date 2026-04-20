@@ -10,37 +10,35 @@ const useApp = () => useContext(AppContext);
 // MOCK DATA
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const PRODUCTS = [
-  { id: "p1", name: "国産鶏もも肉 2kg", category: "精肉", price: 1980, stock: 150, unit: "パック", image: "🍗", sku: "MT-001", description: "新鮮な国産鶏もも肉。唐揚げ・照り焼きに最適。", rating: 4.5 },
-  { id: "p2", name: "有機キャベツ 1玉", category: "野菜", price: 298, stock: 200, unit: "個", image: "🥬", sku: "VG-001", description: "契約農家直送の有機キャベツ。甘みが強く生食にも。", rating: 4.8 },
-  { id: "p3", name: "特選和牛サーロイン 500g", category: "精肉", price: 4980, stock: 30, unit: "パック", image: "🥩", sku: "MT-002", description: "A5ランク和牛サーロイン。きめ細かいサシが特徴。", rating: 4.9 },
-  { id: "p4", name: "北海道産じゃがいも 5kg", category: "野菜", price: 890, stock: 80, unit: "箱", image: "🥔", sku: "VG-002", description: "北海道十勝産メークイン。煮崩れしにくい品種。", rating: 4.3 },
-  { id: "p5", name: "業務用サラダ油 16.5L", category: "調味料", price: 3150, stock: 45, unit: "缶", image: "🫗", sku: "OL-001", description: "大容量業務用サラダ油。フライ・炒め物に。", rating: 4.1 },
-  { id: "p6", name: "特選醤油 1.8L", category: "調味料", price: 680, stock: 120, unit: "本", image: "🍶", sku: "SS-001", description: "丸大豆使用の天然醸造醤油。深いコク。", rating: 4.6 },
-  { id: "p7", name: "冷凍エビフライ 30本入", category: "冷凍食品", price: 2480, stock: 60, unit: "箱", image: "🍤", sku: "FZ-001", description: "衣付き冷凍エビフライ。大ぶりサイズ。", rating: 4.4 },
-  { id: "p8", name: "業務用白米 10kg", category: "米・穀物", price: 3800, stock: 100, unit: "袋", image: "🍚", sku: "RC-001", description: "新潟産コシヒカリ。ふっくら炊き上がり。", rating: 4.7 },
-  { id: "p9", name: "国産豚バラ肉 1kg", category: "精肉", price: 1280, stock: 90, unit: "パック", image: "🥓", sku: "MT-003", description: "国産豚バラスライス。角煮・炒め物に。", rating: 4.2 },
-  { id: "p10", name: "有機トマト 1kg", category: "野菜", price: 580, stock: 75, unit: "パック", image: "🍅", sku: "VG-003", description: "有機栽培の完熟トマト。甘みと酸味のバランス◎", rating: 4.5 },
-  { id: "p11", name: "冷凍餃子 50個入", category: "冷凍食品", price: 1680, stock: 55, unit: "箱", image: "🥟", sku: "FZ-002", description: "手作り風冷凍餃子。焼き・水餃子両対応。", rating: 4.3 },
-  { id: "p12", name: "業務用味噌 4kg", category: "調味料", price: 1200, stock: 40, unit: "パック", image: "🫘", sku: "SS-002", description: "信州味噌。味噌汁・味噌漬けに最適。", rating: 4.4 },
+  { id: "p1", name: "ステンレス鋼管 50A", category: "配管材", price: 4800, stock: 120, unit: "本", image: "🔧", sku: "PIP-SS-50A", description: "外径60.5mm × 厚さ2.0mm × 長さ4000mm。日本製鉄製。", rating: 4.5 },
+  { id: "p2", name: "銅管 25A", category: "配管材", price: 3200, stock: 18, unit: "本", image: "🔧", sku: "PIP-CU-25A", description: "外径28.58mm × 厚さ1.0mm × 長さ4000mm。三菱マテリアル製。", rating: 4.8 },
+  { id: "p3", name: "VLP管 100A", category: "配管材", price: 2800, stock: 85, unit: "本", image: "🔧", sku: "PIP-VL-100A", description: "外径114mm × 長さ4000mm。クボタケミックス製。", rating: 4.3 },
+  { id: "p4", name: "ボールバルブ 50A", category: "バルブ", price: 8500, stock: 45, unit: "個", image: "🔩", sku: "VLV-BB-50A", description: "ステンレス製 フルボア JIS10K。キッツ製。", rating: 4.9 },
+  { id: "p5", name: "渦巻ポンプ 2HP", category: "ポンプ", price: 125000, stock: 8, unit: "台", image: "⚙️", sku: "PMP-VR-2HP", description: "揚程25m 流量200L/min。荏原製作所製。", rating: 4.6 },
+  { id: "p6", name: "ロックウール保温材 50mm", category: "保温材", price: 1800, stock: 200, unit: "枚", image: "📦", sku: "INS-RW-50", description: "厚さ50mm × 幅610mm × 長さ1820mm。ニチアス製。", rating: 4.1 },
+  { id: "p7", name: "ウェルドネックフランジ 80A", category: "フランジ", price: 6200, stock: 35, unit: "個", image: "⭕", sku: "FLG-WN-80A", description: "JIS10K ステンレス製。ベンカン製。", rating: 4.4 },
+  { id: "p8", name: "PTFEガスケット 80A", category: "ガスケット", price: 850, stock: 150, unit: "枚", image: "⭕", sku: "GSK-PT-80A", description: "JIS10K 厚さ3mm。バルカー製。", rating: 4.7 },
+  { id: "p9", name: "ステンレスボルト M16×60", category: "締結材", price: 320, stock: 500, unit: "本", image: "🔩", sku: "BLT-SS-M16", description: "SUS304 六角ボルト。サンコーインダストリー製。", rating: 4.2 },
+  { id: "p10", name: "90°エルボ 50A", category: "継手", price: 3500, stock: 60, unit: "個", image: "🔧", sku: "FIT-EL-50A", description: "ステンレス製 ロングラジアス。ベンカン製。", rating: 4.5 },
 ];
 
-const CATEGORIES = ["すべて", "精肉", "野菜", "調味料", "冷凍食品", "米・穀物"];
+const CATEGORIES = ["すべて", "配管材", "バルブ", "ポンプ", "保温材", "フランジ", "ガスケット", "締結材", "継手"];
 
 const CUSTOMERS = [
-  { id: "c1", companyName: "レストラン花月", contactName: "田中太郎", email: "tanaka@kagetsu.jp", phone: "03-1234-5678", tier: "ゴールド", totalOrders: 48, totalSpent: 2340000 },
-  { id: "c2", companyName: "居酒屋まるや", contactName: "佐藤花子", email: "sato@maruya.jp", phone: "03-2345-6789", tier: "シルバー", totalOrders: 32, totalSpent: 1560000 },
-  { id: "c3", companyName: "カフェ青空", contactName: "鈴木一郎", email: "suzuki@aozora.jp", phone: "03-3456-7890", tier: "ブロンズ", totalOrders: 15, totalSpent: 720000 },
-  { id: "c4", companyName: "ホテルグランド", contactName: "高橋美咲", email: "takahashi@grand.jp", phone: "03-4567-8901", tier: "プラチナ", totalOrders: 96, totalSpent: 8900000 },
-  { id: "c5", companyName: "弁当工房さくら", contactName: "渡辺健", email: "watanabe@sakura.jp", phone: "03-5678-9012", tier: "ゴールド", totalOrders: 64, totalSpent: 3200000 },
+  { id: "c1", companyName: "山田設備工業株式会社", contactName: "山田 太郎", email: "yamada@yamada-setsubi.jp", phone: "03-1234-5678", tier: "プラチナ", totalOrders: 96, totalSpent: 18500000 },
+  { id: "c2", companyName: "佐藤管工株式会社", contactName: "佐藤 一郎", email: "sato@sato-kanko.jp", phone: "045-2345-6789", tier: "ゴールド", totalOrders: 64, totalSpent: 12800000 },
+  { id: "c3", companyName: "田中建設株式会社", contactName: "田中 次郎", email: "tanaka@tanaka-kensetsu.jp", phone: "052-3456-7890", tier: "ゴールド", totalOrders: 48, totalSpent: 9600000 },
+  { id: "c4", companyName: "鈴木産業株式会社", contactName: "鈴木 三郎", email: "suzuki@suzuki-sangyo.jp", phone: "06-4567-8901", tier: "シルバー", totalOrders: 32, totalSpent: 6400000 },
+  { id: "c5", companyName: "高橋工務店", contactName: "高橋 四郎", email: "takahashi@takahashi-komu.jp", phone: "092-5678-9012", tier: "スタンダード", totalOrders: 15, totalSpent: 3200000 },
 ];
 
 const generateOrders = () => [
-  { id: "o1", orderNumber: "ORD-2024-0001", customerId: "c1", customerName: "レストラン花月", items: [{ productId: "p1", productName: "国産鶏もも肉 2kg", quantity: 10, unitPrice: 1980 }, { productId: "p6", productName: "特選醤油 1.8L", quantity: 5, unitPrice: 680 }], total: 23200, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-15", deliveryDate: "2024-03-16", paymentMethod: "振込" },
-  { id: "o2", orderNumber: "ORD-2024-0002", customerId: "c4", customerName: "ホテルグランド", items: [{ productId: "p3", productName: "特選和牛サーロイン 500g", quantity: 20, unitPrice: 4980 }, { productId: "p8", productName: "業務用白米 10kg", quantity: 5, unitPrice: 3800 }], total: 118600, status: "shipped", paymentStatus: "paid", orderDate: "2024-03-16", deliveryDate: "2024-03-17", paymentMethod: "カード" },
-  { id: "o3", orderNumber: "ORD-2024-0003", customerId: "c2", customerName: "居酒屋まるや", items: [{ productId: "p7", productName: "冷凍エビフライ 30本入", quantity: 3, unitPrice: 2480 }, { productId: "p11", productName: "冷凍餃子 50個入", quantity: 5, unitPrice: 1680 }], total: 15840, status: "processing", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "振込" },
-  { id: "o4", orderNumber: "ORD-2024-0004", customerId: "c5", customerName: "弁当工房さくら", items: [{ productId: "p9", productName: "国産豚バラ肉 1kg", quantity: 15, unitPrice: 1280 }, { productId: "p2", productName: "有機キャベツ 1玉", quantity: 20, unitPrice: 298 }], total: 25160, status: "confirmed", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "代引き" },
-  { id: "o5", orderNumber: "ORD-2024-0005", customerId: "c3", customerName: "カフェ青空", items: [{ productId: "p10", productName: "有機トマト 1kg", quantity: 8, unitPrice: 580 }], total: 4640, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-14", deliveryDate: "2024-03-15", paymentMethod: "カード" },
-  { id: "o6", orderNumber: "ORD-2024-0006", customerId: "c1", customerName: "レストラン花月", items: [{ productId: "p5", productName: "業務用サラダ油 16.5L", quantity: 2, unitPrice: 3150 }, { productId: "p12", productName: "業務用味噌 4kg", quantity: 3, unitPrice: 1200 }], total: 9900, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-13", deliveryDate: "2024-03-14", paymentMethod: "振込" },
+  { id: "o1", orderNumber: "ORD-2024-0001", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 10, unitPrice: 1980 }, { productId: "p6", productName: "ボールバルブ 50A", quantity: 5, unitPrice: 680 }], total: 23200, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-15", deliveryDate: "2024-03-16", paymentMethod: "振込" },
+  { id: "o2", orderNumber: "ORD-2024-0002", customerId: "c4", customerName: "鈴木産業株式会社", items: [{ productId: "p3", productName: "銅管 25A", quantity: 20, unitPrice: 4980 }, { productId: "p8", productName: "VLP管 100A", quantity: 5, unitPrice: 3800 }], total: 118600, status: "shipped", paymentStatus: "paid", orderDate: "2024-03-16", deliveryDate: "2024-03-17", paymentMethod: "カード" },
+  { id: "o3", orderNumber: "ORD-2024-0003", customerId: "c2", customerName: "佐藤管工株式会社", items: [{ productId: "p7", productName: "PTFEガスケット 80A", quantity: 3, unitPrice: 2480 }, { productId: "p11", productName: "ウェルドネックフランジ 80A", quantity: 5, unitPrice: 1680 }], total: 15840, status: "processing", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "振込" },
+  { id: "o4", orderNumber: "ORD-2024-0004", customerId: "c5", customerName: "高橋工務店", items: [{ productId: "p9", productName: "ロックウール保温材 50mm", quantity: 15, unitPrice: 1280 }, { productId: "p2", productName: "渦巻ポンプ 2HP", quantity: 20, unitPrice: 298 }], total: 25160, status: "confirmed", paymentStatus: "pending", orderDate: "2024-03-17", paymentMethod: "代引き" },
+  { id: "o5", orderNumber: "ORD-2024-0005", customerId: "c3", customerName: "田中建設株式会社", items: [{ productId: "p10", productName: "90°エルボ 50A", quantity: 8, unitPrice: 580 }], total: 4640, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-14", deliveryDate: "2024-03-15", paymentMethod: "カード" },
+  { id: "o6", orderNumber: "ORD-2024-0006", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p5", productName: "ステンレスボルト M16×60", quantity: 2, unitPrice: 3150 }, { productId: "p12", productName: "ステンレスボルト M16×60", quantity: 3, unitPrice: 1200 }], total: 9900, status: "delivered", paymentStatus: "paid", orderDate: "2024-03-13", deliveryDate: "2024-03-14", paymentMethod: "振込" },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -92,7 +90,7 @@ const statusColors = {
   pending: { bg: "bg-orange-100", text: "text-orange-800", label: "保留" },
   paid: { bg: "bg-green-100", text: "text-green-800", label: "入金済" },
 };
-const tierColors = { プラチナ: "bg-gradient-to-r from-slate-400 to-slate-600 text-white", ゴールド: "bg-gradient-to-r from-amber-400 to-amber-600 text-white", シルバー: "bg-gray-200 text-gray-800", ブロンズ: "bg-orange-100 text-orange-800" };
+const tierColors = { プラチナ: "bg-gradient-to-r from-slate-400 to-slate-600 text-white", ゴールド: "bg-gradient-to-r from-amber-400 to-amber-600 text-white", シルバー: "bg-gray-200 text-gray-800", スタンダード: "bg-orange-100 text-orange-800" };
 
 const Badge = ({ status }) => {
   const s = statusColors[status] || { bg: "bg-gray-100", text: "text-gray-800", label: status };
@@ -118,7 +116,7 @@ const LandingPage = () => {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 sm:px-12 py-4 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-black tracking-tight">🏪 shopeee</span>
+          <span className="text-2xl font-black tracking-tight">🏭 shopeee</span>
           <span className="text-xs bg-blue-600 px-2 py-0.5 rounded-full ml-1">AI</span>
         </div>
         <div className="flex items-center gap-3">
@@ -136,15 +134,15 @@ const LandingPage = () => {
         </div>
         <div className="relative z-10 max-w-4xl mx-auto">
           <div className="inline-block mb-6 px-4 py-1.5 border border-blue-400/30 rounded-full text-sm text-blue-300">
-            ✨ 飲食・小売店舗のための資材ECです
+            ✨ 配管材・資材のオンライン卸売プラットフォーム
           </div>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 tracking-tight">
-            店舗管理を<br />
+            資材調達を<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400">AIでスマート</span>に
           </h1>
           <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            発注・在庫・顧客管理をAIエージェントがサポート。<br />
-            業務効率を劇的に改善するEnterprise SaaSプラットフォーム
+            配管材・資材の発注・在庫・顧客管理をAIがサポート。<br />
+            卸売業務を劇的に効率化するEnterprise SaaSプラットフォーム
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button onClick={() => navigate("ec")} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-lg font-bold transition shadow-lg shadow-blue-600/30">
@@ -276,7 +274,7 @@ const ECHeader = ({ cartCount }) => {
   return (
     <header className="bg-white border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <button onClick={() => navigate("landing")} className="text-xl font-black text-gray-900 flex items-center gap-2">🏪 shopeee</button>
+        <button onClick={() => navigate("landing")} className="text-xl font-black text-gray-900 flex items-center gap-2">🏭 shopeee</button>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("operator")} className="text-sm text-gray-500 hover:text-gray-700">管理画面</button>
           <button onClick={() => navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg transition">
@@ -389,7 +387,7 @@ const OperatorLayout = ({ children }) => {
       {mobile && <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />}
       <div className={`${mobile ? "relative z-10" : ""} ${collapsed && !mobile ? "w-16" : "w-60"} h-screen bg-[#0F172A] text-white flex flex-col transition-all`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
-          {(!collapsed || mobile) && <span className="font-black text-lg">🏪 shopeee</span>}
+          {(!collapsed || mobile) && <span className="font-black text-lg">🏭 shopeee</span>}
           <button onClick={() => mobile ? setMobileOpen(false) : setCollapsed(!collapsed)} className="p-1 hover:bg-white/10 rounded"><Icons.menu size={18} /></button>
         </div>
         <nav className="flex-1 py-2 overflow-y-auto">
@@ -757,7 +755,7 @@ const AnalyticsPage = () => {
       <div className="bg-white rounded-xl border p-5">
         <h3 className="font-semibold mb-4">顧客ティア分布</h3>
         <div className="flex flex-wrap gap-4">
-          {["プラチナ", "ゴールド", "シルバー", "ブロンズ"].map(t => {
+          {["プラチナ", "ゴールド", "シルバー", "スタンダード"].map(t => {
             const count = CUSTOMERS.filter(c => c.tier === t).length;
             return (
               <div key={t} className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 border min-w-[180px]">
@@ -817,7 +815,7 @@ const AIChat = () => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [messages]);
 
-  const systemPrompt = `あなたは「shopeee」の店舗管理AIアシスタントです。飲食店・小売店向け卸売ECプラットフォームの管理者を支援します。
+  const systemPrompt = `あなたは「shopeee」の店舗管理AIアシスタントです。配管材・資材の卸売ECプラットフォームの管理者を支援します。
 
 現在のストアデータ:
 - 商品数: ${PRODUCTS.length}件
@@ -962,6 +960,16 @@ export default function App() {
 
   return (
     <AppContext.Provider value={ctx}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+        * { font-family: Inter, system-ui, sans-serif; box-sizing: border-box; }
+        body { margin: 0; -webkit-font-smoothing: antialiased; }
+        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      `}</style>
       {page === "landing" && <LandingPage />}
       {page === "ec" && <ECStore />}
       {page === "cart" && <CartPage />}
