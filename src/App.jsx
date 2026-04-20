@@ -570,6 +570,10 @@ const OrdersPage = () => {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between mb-2">
+        <div><h2 className="font-semibold text-sm">受注管理</h2><p className="text-xs text-gray-500">注文の確認・処理・ステータス管理</p></div>
+        <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規受注登録</button>
+      </div>
       <div className="flex flex-wrap gap-2 mb-2">
         {[{ v: "all", l: "すべて" }, { v: "確認待ち", l: "確認待ち" }, { v: "確認済", l: "確認済" }, { v: "処理中", l: "処理中" }, { v: "発送済", l: "発送済" }, { v: "配達完了", l: "配達完了" }].map(f => (
           <button key={f.v} onClick={() => setFilter(f.v)} className={`px-3 py-1.5 rounded-lg text-sm transition ${filter === f.v ? "bg-blue-600 text-white" : "bg-white border text-gray-600"}`}>{f.l}</button>
@@ -613,15 +617,15 @@ const ProductsPage = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">{products.length}件の商品</p>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-1"><Icons.plus size={16} /> 商品追加</button>
+        <div><h2 className="font-semibold text-sm">商品管理</h2><p className="text-xs text-gray-500">商品マスタの登録・編集・在庫確認（{products.length}件）</p></div>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-1"><Icons.plus size={16} /> 新規商品登録</button>
       </div>
       <div className="bg-white rounded-xl border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {["", "商品名", "SKU", "カテゴリ", "価格", "在庫", "評価"].map(h => (
+                {["", "商品名", "SKU", "カテゴリ", "規格", "基準価格", "在庫", "在庫状態"].map(h => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -633,11 +637,12 @@ const ProductsPage = () => {
                   <td className="px-4 py-3 text-sm font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3"><span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">{p.category}</span></td>
+                  <td className="px-4 py-3 text-xs text-gray-500">{p.description}</td>
                   <td className="px-4 py-3 text-sm font-bold">¥{fmt(p.price)}</td>
                   <td className="px-4 py-3">
                     <span className={`text-sm font-medium ${p.stock < 50 ? "text-yellow-600" : "text-green-600"}`}>{p.stock}{p.unit}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm">{p.rating}</td>
+                  <td className="px-4 py-3"><Badge status={p.stock < 20 ? "危険" : p.stock < 50 ? "在庫少" : "正常"}/></td>
                 </tr>
               ))}
             </tbody>
@@ -651,6 +656,10 @@ const ProductsPage = () => {
 // Customers Page
 const CustomersPage = () => (
   <div className="space-y-4">
+    <div className="flex items-center justify-between">
+      <div><h2 className="font-semibold text-sm">顧客管理</h2><p className="text-xs text-gray-500">取引先情報の管理・取引履歴・掛率設定</p></div>
+      <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規顧客登録</button>
+    </div>
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div className="bg-white rounded-xl border p-5">
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総顧客数</p>
@@ -696,6 +705,10 @@ const CustomersPage = () => (
 // Inventory Page
 const InventoryPage = () => (
   <div className="space-y-4">
+    <div className="flex items-center justify-between">
+      <div><h2 className="font-semibold text-sm">在庫管理</h2><p className="text-xs text-gray-500">在庫状況の確認・入出庫管理・アラート管理</p></div>
+      <div className="flex gap-2"><button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">入庫登録</button><button className="px-3 py-1.5 bg-white border text-gray-600 rounded-lg text-sm">出庫登録</button><button className="px-3 py-1.5 bg-white border text-gray-600 rounded-lg text-sm">棚卸し</button></div>
+    </div>
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
       {[
         { label: "総アイテム", value: PRODUCTS.length, color: "text-blue-600" },
