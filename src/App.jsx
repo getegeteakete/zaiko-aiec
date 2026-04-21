@@ -13,16 +13,16 @@ const useApp = () => useContext(AppContext);
 // MOCK DATA
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const PRODUCTS = [
-  { id: "p1", name: "ステンレス鋼管 50A", category: "配管材", price: 4800, stock: 120, unit: "本", image: "🔧", sku: "PIP-SS-50A", description: "外径60.5mm × 厚さ2.0mm × 長さ4000mm。日本製鉄製。", rating: 4.5 },
-  { id: "p2", name: "銅管 25A", category: "配管材", price: 3200, stock: 18, unit: "本", image: "🔧", sku: "PIP-CU-25A", description: "外径28.58mm × 厚さ1.0mm × 長さ4000mm。三菱マテリアル製。", rating: 4.8 },
-  { id: "p3", name: "VLP管 100A", category: "配管材", price: 2800, stock: 85, unit: "本", image: "🔧", sku: "PIP-VL-100A", description: "外径114mm × 長さ4000mm。クボタケミックス製。", rating: 4.3 },
-  { id: "p4", name: "ボールバルブ 50A", category: "バルブ", price: 8500, stock: 45, unit: "個", image: "🔩", sku: "VLV-BB-50A", description: "ステンレス製 フルボア JIS10K。キッツ製。", rating: 4.9 },
-  { id: "p5", name: "渦巻ポンプ 2HP", category: "ポンプ", price: 125000, stock: 8, unit: "台", image: "⚙️", sku: "PMP-VR-2HP", description: "揚程25m 流量200L/min。荏原製作所製。", rating: 4.6 },
-  { id: "p6", name: "ロックウール保温材 50mm", category: "保温材", price: 1800, stock: 200, unit: "枚", image: "📦", sku: "INS-RW-50", description: "厚さ50mm × 幅610mm × 長さ1820mm。ニチアス製。", rating: 4.1 },
-  { id: "p7", name: "ウェルドネックフランジ 80A", category: "フランジ", price: 6200, stock: 35, unit: "個", image: "⭕", sku: "FLG-WN-80A", description: "JIS10K ステンレス製。ベンカン製。", rating: 4.4 },
-  { id: "p8", name: "PTFEガスケット 80A", category: "ガスケット", price: 850, stock: 150, unit: "枚", image: "⭕", sku: "GSK-PT-80A", description: "JIS10K 厚さ3mm。バルカー製。", rating: 4.7 },
-  { id: "p9", name: "ステンレスボルト M16×60", category: "締結材", price: 320, stock: 500, unit: "本", image: "🔩", sku: "BLT-SS-M16", description: "SUS304 六角ボルト。サンコーインダストリー製。", rating: 4.2 },
-  { id: "p10", name: "90°エルボ 50A", category: "継手", price: 3500, stock: 60, unit: "個", image: "🔧", sku: "FIT-EL-50A", description: "ステンレス製 ロングラジアス。ベンカン製。", rating: 4.5 },
+  { id: "p1", name: "ステンレス鋼管 50A", category: "配管材", price: 4800, stock: 120, unit: "本", image: "pipe", sku: "PIP-SS-50A", description: "外径60.5mm × 厚さ2.0mm × 長さ4000mm。日本製鉄製。", rating: 4.5 },
+  { id: "p2", name: "銅管 25A", category: "配管材", price: 3200, stock: 18, unit: "本", image: "pipe", sku: "PIP-CU-25A", description: "外径28.58mm × 厚さ1.0mm × 長さ4000mm。三菱マテリアル製。", rating: 4.8 },
+  { id: "p3", name: "VLP管 100A", category: "配管材", price: 2800, stock: 85, unit: "本", image: "pipe", sku: "PIP-VL-100A", description: "外径114mm × 長さ4000mm。クボタケミックス製。", rating: 4.3 },
+  { id: "p4", name: "ボールバルブ 50A", category: "バルブ", price: 8500, stock: 45, unit: "個", image: "bolt", sku: "VLV-BB-50A", description: "ステンレス製 フルボア JIS10K。キッツ製。", rating: 4.9 },
+  { id: "p5", name: "渦巻ポンプ 2HP", category: "ポンプ", price: 125000, stock: 8, unit: "台", image: "gear", sku: "PMP-VR-2HP", description: "揚程25m 流量200L/min。荏原製作所製。", rating: 4.6 },
+  { id: "p6", name: "ロックウール保温材 50mm", category: "保温材", price: 1800, stock: 200, unit: "枚", image: "box", sku: "INS-RW-50", description: "厚さ50mm × 幅610mm × 長さ1820mm。ニチアス製。", rating: 4.1 },
+  { id: "p7", name: "ウェルドネックフランジ 80A", category: "フランジ", price: 6200, stock: 35, unit: "個", image: "ring", sku: "FLG-WN-80A", description: "JIS10K ステンレス製。ベンカン製。", rating: 4.4 },
+  { id: "p8", name: "PTFEガスケット 80A", category: "ガスケット", price: 850, stock: 150, unit: "枚", image: "ring", sku: "GSK-PT-80A", description: "JIS10K 厚さ3mm。バルカー製。", rating: 4.7 },
+  { id: "p9", name: "ステンレスボルト M16×60", category: "締結材", price: 320, stock: 500, unit: "本", image: "bolt", sku: "BLT-SS-M16", description: "SUS304 六角ボルト。サンコーインダストリー製。", rating: 4.2 },
+  { id: "p10", name: "90°エルボ 50A", category: "継手", price: 3500, stock: 60, unit: "個", image: "pipe", sku: "FIT-EL-50A", description: "ステンレス製 ロングラジアス。ベンカン製。", rating: 4.5 },
 ];
 
 const CATEGORIES = ["すべて", "配管材", "バルブ", "ポンプ", "保温材", "フランジ", "ガスケット", "締結材", "継手"];
@@ -166,9 +166,9 @@ const LandingPage = () => {
 
       {/* ── KPI Strip ── */}
       <div className="container -mt-5 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[{v:"10,000+",l:"取扱商品数",icon:"📦"},{v:"翌日",l:"最短配送",icon:"🚛"},{v:"24h",l:"受注対応",icon:"⏰"},{v:"AI",l:"在庫自動提案",icon:"🤖"}].map((k,i) => (
+        {[{v:"10,000+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"AI",l:"在庫自動提案",Ic:Icons.brain}].map((k,i) => (
           <div key={i} className="card p-4 flex items-center gap-3 animate-fade-up" style={{animationDelay:`${i*0.08}s`}}>
-            <span className="text-2xl">{k.icon}</span>
+            <k.Ic size={24}/>
             <div><p className="font-display font-extrabold text-lg" style={{color:'var(--navy-900)'}}>{k.v}</p><p className="text-xs" style={{color:'var(--slate-400)'}}>{k.l}</p></div>
           </div>
         ))}
@@ -359,7 +359,7 @@ const CartPage = () => {
         <h1 className="text-2xl font-bold mb-6">カート ({cart.length}件)</h1>
         {cart.length === 0 ? (
           <div className="bg-white rounded-xl border p-12 text-center">
-            <div className="text-5xl mb-4">🛒</div>
+            <div className="mb-4"><Icons.cart size={48}/></div>
             <p className="text-gray-400 mb-4">カートは空です</p>
             <button onClick={() => navigate("ec")} className="px-6 py-2 bg-blue-600 text-white rounded-lg">商品を探す</button>
           </div>
@@ -449,13 +449,13 @@ const OperatorLayout = ({ children }) => {
         {(!collapsed || mobile) && (
           <div className="p-3 border-t border-white/10 space-y-1">
             <button onClick={() => navigate("buyer")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
-              🛒 購入者画面
+              <Icons.cart size={16}/> 購入者画面
             </button>
             <button onClick={() => navigate("ec")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
-              🏪 ECストアを開く
+              <Icons.store size={16}/> ECストアを開く
             </button>
             <button onClick={() => navigate("landing")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
-              🏠 トップに戻る
+              <Icons.home size={16}/> トップに戻る
             </button>
           </div>
         )}
@@ -1006,7 +1006,7 @@ const BuyerTopPage = () => {
   const {navigate, products} = useApp();
   return (<div className="space-y-6">
     <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",Ic:Icons.truck},{l:"商品について",Ic:Icons.package},{l:"在庫・納期について",Ic:Icons.inventory},{l:"価格・見積について",Ic:Icons.dollar}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="mb-2"><c.Ic size={24}/></div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);
 };
@@ -1052,7 +1052,7 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 const AIChat = () => {
   const { setAiChatOpen, products: ctxProducts, customers: ctxCustomers } = useApp();
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "こんにちは！シンガタ AIアシスタントです。店舗運営に関するご質問にお答えします。\n\n📊 売上分析\n📦 在庫提案\n👥 顧客分析\n💡 業務改善\n\nなんでもお聞きください！" }
+    { role: "assistant", content: "こんにちは！シンガタ AIアシスタントです。店舗運営に関するご質問にお答えします。\n\n▸ 売上分析\n▸ 在庫提案\n▸ 顧客分析\n▸ 業務改善\n\nなんでもお聞きください！" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
