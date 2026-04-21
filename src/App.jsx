@@ -1237,10 +1237,24 @@ const BuyerPage = () => {
 };
 
 export default function App() {
-  const [page, setPage] = useState("landing");
+  // ═══ URL-based Routing ═══
+  const pathToPage = (path) => {
+    const p = path.replace(/^\//, '').replace(/\/$/, '');
+    return p || 'landing';
+  };
+  const pageToPath = (page) => page === 'landing' ? '/' : `/${page}`;
+
+  const [page, setPage] = useState(() => pathToPage(window.location.pathname));
   const [cart, setCart] = useState([]);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [dbReady, setDbReady] = useState(false);
+
+  // Browser back/forward
+  useEffect(() => {
+    const onPop = () => setPage(pathToPage(window.location.pathname));
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   // ═══ Supabase Data Hooks ═══
   const { data: dbProducts, loading: loadingProducts, refetch: refetchProducts } = useProducts();
@@ -1273,7 +1287,32 @@ export default function App() {
     if (dbProducts.length > 0) setDbReady(true);
   }, [dbProducts]);
 
-  const navigate = (p) => { setPage(p); window.scrollTo(0, 0); };
+  const navigate = (p) => {
+    const url = pageToPath(p);
+    window.history.pushState({}, '', url);
+    setPage(p);
+    window.scrollTo(0, 0);
+  };
+
+  // ═══ SEO: Update page title ═══
+  useEffect(() => {
+    const titles = {
+      landing: "shopeee - 配管材・資材の卸売EC",
+      ec: "商品一覧 | shopeee", cart: "カート | shopeee",
+      operator: "ダッシュボード | shopeee 管理",
+      "operator/orders": "受注管理 | shopeee", "operator/payments": "決済管理 | shopeee",
+      "operator/shipping": "発送管理 | shopeee", "operator/products": "商品管理 | shopeee",
+      "operator/inventory": "在庫管理 | shopeee", "operator/procurement": "仕入管理 | shopeee",
+      "operator/analytics": "売上分析 | shopeee", "operator/customers": "顧客管理 | shopeee",
+      "operator/pricing": "価格・掛率管理 | shopeee", "operator/ai-analytics": "AI分析センター | shopeee",
+      "operator/ai-articles": "AI記事生成 | shopeee", "operator/chats": "チャット管理 | shopeee",
+      "operator/master": "マスタ管理 | shopeee", "operator/settings": "設定 | shopeee",
+      buyer: "マイページ | shopeee", "buyer/products": "商品一覧 | shopeee",
+      "buyer/orders": "注文履歴 | shopeee", "buyer/billing": "請求・決済 | shopeee",
+      "buyer/chat": "チャット相談 | shopeee", "buyer/account": "アカウント | shopeee",
+    };
+    document.title = titles[page] || "shopeee - 配管材・資材の卸売EC";
+  }, [page]);
 
   const addToCart = (product) => {
     setCart(prev => {
