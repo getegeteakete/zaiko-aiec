@@ -102,7 +102,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
       {/* ── Top Bar ── */}
       <div className="bg-industrial text-white/70 text-xs py-1.5 px-4 flex items-center justify-between">
-        <span>法人向け配管材・資材の卸売EC ｜ 最短翌日配送 ｜ 掛売対応</span>
+        <span>シンガタ株式会社 - 法人向け配管材・資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
           <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ログイン</button>
@@ -113,9 +113,9 @@ const LandingPage = () => {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="container flex items-center justify-between py-3 gap-4">
           <button onClick={() => navigate("landing")} className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-display font-black text-sm">S</div>
-            <span className="font-display font-extrabold text-xl tracking-tight" style={{color:'var(--navy-900)'}}>shopeee</span>
-            <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{background:'var(--amber-500)',color:'#fff'}}>卸売</span>
+            <img src="/logo.png" alt="シンガタ" className="h-8 w-auto"/>
+            
+            
           </button>
           <div className="flex-1 max-w-xl relative hidden sm:block">
             <Icons.search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -215,13 +215,13 @@ const LandingPage = () => {
       {/* ── Footer ── */}
       <footer className="bg-industrial text-white/40 py-8 px-4 relative">
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-2"><div className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-white font-display font-bold text-xs">S</div><span className="font-display font-bold text-sm text-white/60">shopeee</span></div>
+          <div className="flex items-center gap-2"><img src="/logo.png" alt="シンガタ" className="h-6 w-auto opacity-60"/></div>
           <div className="flex gap-4 text-xs">
             <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ページ</button>
             <button onClick={() => navigate("buyer")} className="hover:text-white transition">マイページ</button>
             <button onClick={() => navigate("buyer/chat")} className="hover:text-white transition">お問い合わせ</button>
           </div>
-          <p className="text-xs">© 2024 shopeee Inc.</p>
+          <p className="text-xs">© 2024 シンガタ株式会社</p>
         </div>
       </footer>
     </div>
@@ -314,7 +314,7 @@ const ECHeader = ({ cartCount }) => {
   return (
     <header className="bg-white border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <button onClick={() => navigate("landing")} className="text-xl font-black text-gray-900 flex items-center gap-2">🏭 shopeee</button>
+        <button onClick={() => navigate("landing")} className="text-xl font-black text-gray-900 flex items-center gap-2"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("operator")} className="text-sm text-gray-500 hover:text-gray-700">管理画面</button>
           <button onClick={() => navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg transition">
@@ -435,7 +435,7 @@ const OperatorLayout = ({ children }) => {
       {mobile && <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />}
       <div className={`${mobile ? "relative z-10" : ""} ${collapsed && !mobile ? "w-16" : "w-60"} h-screen bg-gray-950 text-white flex flex-col transition-all`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
-          {(!collapsed || mobile) && <span className="font-black text-lg">🏭 shopeee</span>}
+          {(!collapsed || mobile) && <span className="font-black text-lg"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></span>}
           <button onClick={() => mobile ? setMobileOpen(false) : setCollapsed(!collapsed)} className="p-1 hover:bg-white/10 rounded"><Icons.menu size={18} /></button>
         </div>
         <nav className="flex-1 py-2 overflow-y-auto">
@@ -844,7 +844,7 @@ const AnalyticsPage = () => {
 const SettingsPage = () => (
   <div className="max-w-2xl space-y-6">
     {[
-      { title: "ストア情報", fields: [{ label: "店舗名", value: "shopeee デモストア" }, { label: "メール", value: "admin@shopeee.jp" }, { label: "電話番号", value: "03-0000-0000" }] },
+      { title: "ストア情報", fields: [{ label: "店舗名", value: "シンガタ株式会社 BtoB卸デモ" }, { label: "メール", value: "admin@singata.co.jp" }, { label: "電話番号", value: "03-0000-0000" }] },
       { title: "通知設定", fields: [{ label: "新規注文通知", type: "toggle", value: true }, { label: "低在庫アラート", type: "toggle", value: true }, { label: "レポートメール", type: "toggle", value: false }] },
     ].map((section, i) => (
       <div key={i} className="bg-white rounded-xl border p-6">
@@ -991,7 +991,7 @@ const BuyerLayout = ({children}) => {
   const menu = [{id:"buyer",l:"トップ"},{id:"buyer/products",l:"商品一覧"},{id:"buyer/orders",l:"注文履歴"},{id:"buyer/billing",l:"請求・決済"},{id:"buyer/chat",l:"チャット相談"},{id:"buyer/account",l:"アカウント"}];
   return (<div className="min-h-screen bg-gray-50">
     <header className="bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-      <button onClick={()=>navigate("landing")} className="text-lg font-black text-gray-900">🏭 shopeee</button>
+      <button onClick={()=>navigate("landing")} className="text-lg font-black text-gray-900"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
       <nav className="hidden md:flex items-center gap-1">{menu.map(m=><button key={m.id} onClick={()=>navigate(m.id)} className={`px-3 py-1.5 rounded-lg text-xs transition ${page===m.id?"bg-blue-50 text-blue-600 font-medium":"text-gray-500 hover:bg-gray-50"}`}>{m.l}</button>)}</nav>
       <div className="flex items-center gap-2">
         <button onClick={()=>navigate("operator")} className="text-xs text-gray-500">運営者画面</button>
@@ -1052,7 +1052,7 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 const AIChat = () => {
   const { setAiChatOpen, products: ctxProducts, customers: ctxCustomers } = useApp();
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "こんにちは！shopeee AIアシスタントです。店舗運営に関するご質問にお答えします。\n\n📊 売上分析\n📦 在庫提案\n👥 顧客分析\n💡 業務改善\n\nなんでもお聞きください！" }
+    { role: "assistant", content: "こんにちは！シンガタ AIアシスタントです。店舗運営に関するご質問にお答えします。\n\n📊 売上分析\n📦 在庫提案\n👥 顧客分析\n💡 業務改善\n\nなんでもお聞きください！" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1062,7 +1062,7 @@ const AIChat = () => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [messages]);
 
-  const systemPrompt = `あなたは「shopeee」の店舗管理AIアシスタントです。配管材・資材の卸売ECプラットフォームの管理者を支援します。
+  const systemPrompt = `あなたは「シンガタ」の店舗管理AIアシスタントです。配管材・資材の卸売ECプラットフォームの管理者を支援します。
 
 現在のストアデータ:
 - 商品数: ${(ctxProducts||PRODUCTS).length}件
@@ -1116,7 +1116,7 @@ const AIChat = () => {
           <Icons.brain size={20} />
           <div>
             <h3 className="font-bold text-sm">AIアシスタント</h3>
-            <p className="text-xs text-white/70">shopeee AI Agent</p>
+            <p className="text-xs text-white/70">シンガタ AI Agent</p>
           </div>
         </div>
         <button onClick={() => setAiChatOpen(false)} className="p-1 hover:bg-white/10 rounded"><Icons.x size={18} /></button>
@@ -1271,21 +1271,21 @@ export default function App() {
   // ═══ SEO: Update page title ═══
   useEffect(() => {
     const titles = {
-      landing: "shopeee - 配管材・資材の卸売EC",
-      ec: "商品一覧 | shopeee", cart: "カート | shopeee",
-      operator: "ダッシュボード | shopeee 管理",
-      "operator/orders": "受注管理 | shopeee", "operator/payments": "決済管理 | shopeee",
-      "operator/shipping": "発送管理 | shopeee", "operator/products": "商品管理 | shopeee",
-      "operator/inventory": "在庫管理 | shopeee", "operator/procurement": "仕入管理 | shopeee",
-      "operator/analytics": "売上分析 | shopeee", "operator/customers": "顧客管理 | shopeee",
-      "operator/pricing": "価格・掛率管理 | shopeee", "operator/ai-analytics": "AI分析センター | shopeee",
-      "operator/ai-articles": "AI記事生成 | shopeee", "operator/chats": "チャット管理 | shopeee",
-      "operator/master": "マスタ管理 | shopeee", "operator/settings": "設定 | shopeee",
-      buyer: "マイページ | shopeee", "buyer/products": "商品一覧 | shopeee",
-      "buyer/orders": "注文履歴 | shopeee", "buyer/billing": "請求・決済 | shopeee",
-      "buyer/chat": "チャット相談 | shopeee", "buyer/account": "アカウント | shopeee",
+      landing: "シンガタ株式会社 - BtoB卸デモサイト",
+      ec: "商品一覧 | シンガタ", cart: "カート | シンガタ",
+      operator: "ダッシュボード | シンガタ管理",
+      "operator/orders": "受注管理 | シンガタ", "operator/payments": "決済管理 | シンガタ",
+      "operator/shipping": "発送管理 | シンガタ", "operator/products": "商品管理 | シンガタ",
+      "operator/inventory": "在庫管理 | シンガタ", "operator/procurement": "仕入管理 | シンガタ",
+      "operator/analytics": "売上分析 | シンガタ", "operator/customers": "顧客管理 | シンガタ",
+      "operator/pricing": "価格・掛率管理 | シンガタ", "operator/ai-analytics": "AI分析センター | シンガタ",
+      "operator/ai-articles": "AI記事生成 | シンガタ", "operator/chats": "チャット管理 | シンガタ",
+      "operator/master": "マスタ管理 | シンガタ", "operator/settings": "設定 | シンガタ",
+      buyer: "マイページ | シンガタ", "buyer/products": "商品一覧 | シンガタ",
+      "buyer/orders": "注文履歴 | シンガタ", "buyer/billing": "請求・決済 | シンガタ",
+      "buyer/chat": "チャット相談 | シンガタ", "buyer/account": "アカウント | シンガタ",
     };
-    document.title = titles[page] || "shopeee - 配管材・資材の卸売EC";
+    document.title = titles[page] || "シンガタ株式会社 - BtoB卸デモサイト";
   }, [page]);
 
   const addToCart = (product) => {
