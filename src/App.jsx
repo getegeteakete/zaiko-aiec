@@ -114,7 +114,7 @@ const statusColors = {
   "完了": { bg: "bg-green-100", text: "text-green-800", label: "完了" },
   "有効": { bg: "bg-green-100", text: "text-green-800", label: "有効" },
 };
-const tierColors = { プラチナ: "bg-gradient-to-r from-slate-400 to-slate-600 text-white", ゴールド: "bg-gradient-to-r from-amber-400 to-amber-600 text-white", シルバー: "bg-gray-200 text-gray-800", スタンダード: "bg-orange-100 text-orange-800" };
+const tierColors = { プラチナ: "bg-gray-700 text-white", ゴールド: "bg-yellow-600 text-white", シルバー: "bg-gray-200 text-gray-800", スタンダード: "bg-orange-100 text-orange-800" };
 
 const Badge = ({ status }) => {
   const s = statusColors[status] || { bg: "bg-gray-100", text: "text-gray-800", label: status };
@@ -467,7 +467,7 @@ const OperatorLayout = ({ children }) => {
   const Sidebar = ({ mobile }) => (
     <aside className={`${mobile ? "fixed inset-0 z-50 flex" : "hidden md:flex"} flex-col`}>
       {mobile && <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />}
-      <div className={`${mobile ? "relative z-10" : ""} ${collapsed && !mobile ? "w-16" : "w-60"} h-screen bg-[#0F172A] text-white flex flex-col transition-all`}>
+      <div className={`${mobile ? "relative z-10" : ""} ${collapsed && !mobile ? "w-16" : "w-60"} h-screen bg-gray-950 text-white flex flex-col transition-all`}>
         <div className="p-4 flex items-center justify-between border-b border-white/10">
           {(!collapsed || mobile) && <span className="font-black text-lg">🏭 shopeee</span>}
           <button onClick={() => mobile ? setMobileOpen(false) : setCollapsed(!collapsed)} className="p-1 hover:bg-white/10 rounded"><Icons.menu size={18} /></button>
@@ -1039,7 +1039,7 @@ const BuyerLayout = ({children}) => {
 const BuyerTopPage = () => {
   const {navigate, products} = useApp();
   return (<div className="space-y-6">
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
+    <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);
