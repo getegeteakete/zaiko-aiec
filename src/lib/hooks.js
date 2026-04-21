@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from './supabase';
+import { supabase, isSupabaseReady } from './supabase';
 
 // ═══ Generic fetch hook ═══
 export function useSupabase(table, options = {}) {
@@ -8,6 +8,7 @@ export function useSupabase(table, options = {}) {
   const [error, setError] = useState(null);
 
   const fetch = useCallback(async () => {
+    if (!isSupabaseReady()) { setLoading(false); return; }
     setLoading(true);
     try {
       let q = supabase.from(table).select(options.select || '*');
@@ -49,6 +50,7 @@ export function useOrders() {
   const [loading, setLoading] = useState(true);
 
   const fetch = useCallback(async () => {
+    if (!isSupabaseReady()) { setLoading(false); return; }
     setLoading(true);
     const { data: orders } = await supabase
       .from('orders')
@@ -66,6 +68,7 @@ export function useOrders() {
 export async function createOrder({ customerName, items, paymentMethod, total }) {
   const orderNum = `PO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
   
+  if (!isSupabaseReady()) throw new Error("DB not ready");
   const { data: order, error } = await supabase
     .from('orders')
     .insert({
@@ -220,5 +223,13 @@ export async function getDashboardStats() {
     totalSales: orders.data?.reduce((s, o) => s + (o.total || 0), 0) || 0,
     lowStockProducts: products.data?.filter(p => p.status !== '正常') || [],
     recentOrders: orders.data?.slice(0, 5) || [],
+  };
+}
+
+// ═══ Guard wrapper ═══
+function guardedAsync(fn) {
+  return async (...args) => {
+    if (!isSupabaseReady()) return { data: null, error: new Error('DB not configured') };
+    return fn(...args);
   };
 }
