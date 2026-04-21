@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 import { supabase } from "./lib/supabase";
 import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange } from "./lib/hooks";
+import { CategoryIcon } from "./warehouse-icons";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTEXT & STATE
@@ -188,7 +189,7 @@ const LandingPage = () => {
           <div className="hidden lg:grid grid-cols-2 gap-3 w-80">
             {featured.map((p, i) => (
               <div key={p.id} className="bg-white/5 backdrop-blur border border-white/10 rounded p-3 animate-fade-up" style={{animationDelay:`${i*0.1}s`, borderRadius:'var(--radius)'}}>
-                <div className="text-3xl text-center mb-1">{p.image}</div>
+                <div className="flex justify-center mb-1"><CategoryIcon category={p.category} size={32} /></div>
                 <p className="text-xs text-white/70 truncate">{p.name}</p>
                 <p className="text-xs font-bold text-amber-400">¥{fmt(p.price)}</p>
               </div>
@@ -224,7 +225,7 @@ const LandingPage = () => {
           {filtered.map((p, i) => (
             <div key={p.id} className="product-card cursor-pointer animate-fade-up" style={{animationDelay:`${i*0.04}s`}} onClick={() => navigate("ec")}>
               <div className="bg-gray-50 flex items-center justify-center text-4xl sm:text-5xl py-6 relative">
-                {p.image}
+                <CategoryIcon category={p.category} size={24} />
                 {p.stock < 30 && <span className="absolute top-2 right-2 text-xs px-1.5 py-0.5 rounded font-semibold" style={{background:'var(--danger)',color:'#fff',fontSize:'10px'}}>残少</span>}
               </div>
               <div className="p-3">
@@ -280,7 +281,7 @@ const ECStore = () => {
         <div className="max-w-5xl mx-auto px-4 py-8">
           <button onClick={() => setSelectedProduct(null)} className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 mb-6"><Icons.arrowLeft size={16} /> 商品一覧に戻る</button>
           <div className="bg-white rounded-xl shadow-sm border p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div className="flex items-center justify-center text-[120px] bg-gray-50 rounded-xl py-12">{selectedProduct.image}</div>
+            <div className="flex items-center justify-center bg-gray-50 rounded-xl py-12"><CategoryIcon category={selectedProduct.category} size={100} /></div>
             <div>
               <span className="text-xs text-gray-400">{selectedProduct.sku}</span>
               <span className="mx-2 text-gray-300">|</span>
@@ -324,7 +325,7 @@ const ECStore = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map(p => (
             <div key={p.id} onClick={() => setSelectedProduct(p)} className="bg-white rounded-xl border shadow-sm hover:shadow-md transition cursor-pointer group overflow-hidden">
-              <div className="bg-gray-50 flex items-center justify-center text-6xl py-8 group-hover:scale-105 transition">{p.image}</div>
+              <div className="bg-gray-50 flex items-center justify-center py-8 group-hover:scale-105 transition"><CategoryIcon category={p.category} size={80} /></div>
               <div className="p-4">
                 <span className="text-xs text-gray-400">{p.category}</span>
                 <h3 className="font-semibold text-sm mt-1 mb-2 line-clamp-2 group-hover:text-blue-600 transition">{p.name}</h3>
@@ -401,7 +402,7 @@ const CartPage = () => {
             <div className="lg:col-span-2 space-y-3">
               {cart.map(item => (
                 <div key={item.id} className="bg-white rounded-xl border p-4 flex items-center gap-4">
-                  <div className="text-4xl w-16 h-16 flex items-center justify-center bg-gray-50 rounded-lg shrink-0">{item.image}</div>
+                  <div className="w-16 h-16 flex items-center justify-center bg-gray-50 rounded-lg shrink-0"><CategoryIcon category={item.category} size={32} /></div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm truncate">{item.name}</h3>
                     <p className="text-blue-600 font-bold">¥{fmt(item.price)}</p>
@@ -600,7 +601,7 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {products.filter(p => p.stock < 50).map(p => (
             <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-              <span className="text-2xl">{p.image}</span>
+              <CategoryIcon category={p.category} size={24} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{p.name}</p>
                 <p className="text-xs text-yellow-700">残り {p.stock}{p.unit}</p>
@@ -685,7 +686,7 @@ const ProductsPage = () => {
             <tbody>
               {products.map(p => (
                 <tr key={p.id} className="border-t hover:bg-gray-50 transition cursor-pointer" onClick={() => setEditing(editing === p.id ? null : p.id)}>
-                  <td className="px-4 py-3 text-2xl">{p.image}</td>
+                  <td className="px-4 py-3"><CategoryIcon category={p.category} size={24} /></td>
                   <td className="px-4 py-3 text-sm font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3"><span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">{p.category}</span></td>
@@ -790,7 +791,7 @@ const InventoryPage = () => { const { products } = useApp(); return (
               const barColor = p.stock < 35 ? "bg-red-500" : p.stock < 60 ? "bg-yellow-500" : "bg-green-500";
               return (
                 <tr key={p.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-3 text-2xl">{p.image}</td>
+                  <td className="px-4 py-3"><CategoryIcon category={p.category} size={24} /></td>
                   <td className="px-4 py-3 text-sm font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3 text-sm font-bold">{p.stock}{p.unit}</td>
@@ -843,7 +844,7 @@ const AnalyticsPage = () => {
             {[...PRODUCTS].sort((a, b) => b.price * b.stock - a.price * a.stock).slice(0, 5).map((p, i) => (
               <div key={p.id} className="flex items-center gap-3 py-2 border-b last:border-0">
                 <span className="text-lg font-bold text-gray-300 w-6">{i + 1}</span>
-                <span className="text-2xl">{p.image}</span>
+                <CategoryIcon category={p.category} size={24} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{p.name}</p>
                   <p className="text-xs text-gray-400">¥{fmt(p.price)} × {p.stock}</p>
@@ -1040,7 +1041,7 @@ const BuyerTopPage = () => {
   return (<div className="space-y-6">
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
-    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="text-3xl text-center mb-2">{p.image}</div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
+    <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);
 };
 
@@ -1050,7 +1051,7 @@ const BuyerProductsPage = () => {
   const filtered = products.filter(p=>cat==="すべて"||p.category===cat);
   return (<div className="space-y-4"><h2 className="font-semibold text-sm">商品一覧</h2>
     <div className="flex gap-2 flex-wrap">{CATEGORIES.map(c=><button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition ${cat===c?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{c}</button>)}</div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{filtered.map(p=><div key={p.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition"><div className="bg-gray-50 flex items-center justify-center text-5xl py-6">{p.image}</div><div className="p-3"><span className="text-xs text-gray-400">{p.category} · {p.sku}</span><h3 className="text-sm font-semibold mt-0.5 mb-1">{p.name}</h3><p className="text-xs text-gray-500 mb-2">{p.description}</p><div className="flex items-center justify-between"><span className="text-sm font-bold text-blue-600">¥{fmt(p.price)}/{p.unit}</span><button onClick={()=>addToCart(p)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><Icons.cart size={14}/></button></div></div></div>)}</div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{filtered.map(p=><div key={p.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition"><div className="bg-gray-50 flex items-center justify-center py-6"><CategoryIcon category={p.category} size={52} /></div><div className="p-3"><span className="text-xs text-gray-400">{p.category} · {p.sku}</span><h3 className="text-sm font-semibold mt-0.5 mb-1">{p.name}</h3><p className="text-xs text-gray-500 mb-2">{p.description}</p><div className="flex items-center justify-between"><span className="text-sm font-bold text-blue-600">¥{fmt(p.price)}/{p.unit}</span><button onClick={()=>addToCart(p)} className="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><Icons.cart size={14}/></button></div></div></div>)}</div>
   </div>);
 };
 
