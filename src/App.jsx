@@ -528,7 +528,7 @@ const OperatorLayout = ({ children }) => {
 
 // Dashboard
 const DashboardPage = () => {
-  const { navigate, products, orders } = useApp();
+  const { navigate, products, orders, customers } = useApp();
   const kpis = [
     { label: "今月の売上", value: `¥${fmt(orders.reduce((s, o) => s + o.total, 0))}`, change: "+12.5%", color: "text-green-600", icon: Icons.dollar },
     { label: "受注件数", value: orders.length, change: "+8.3%", color: "text-green-600", icon: Icons.orders },
@@ -1037,7 +1037,7 @@ const BuyerLayout = ({children}) => {
 };
 
 const BuyerTopPage = () => {
-  const {navigate} = useApp();
+  const {navigate, products} = useApp();
   return (<div className="space-y-6">
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",e:"📦"},{l:"商品について",e:"🔧"},{l:"在庫・納期について",e:"📊"},{l:"価格・見積について",e:"💰"}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="text-2xl mb-2">{c.e}</div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
@@ -1266,7 +1266,15 @@ export default function App() {
 
   // Use DB data if available, otherwise fallback to mock
   const products = dbProducts.length > 0 ? dbProducts : PRODUCTS;
-  const customers = dbCustomers.length > 0 ? dbCustomers : CUSTOMERS;
+  const customers = dbCustomers.length > 0 ? dbCustomers.map(c => ({
+    ...c,
+    companyName: c.company_name || c.companyName,
+    contactName: c.contact_name || c.contactName,
+    totalSpent: c.total_spent ?? c.totalSpent ?? 0,
+    totalOrders: c.total_orders ?? c.totalOrders ?? 0,
+    priceRate: c.price_rate ?? c.priceRate ?? 1,
+    paymentTerms: c.payment_terms || c.paymentTerms,
+  })) : CUSTOMERS;
   const orders = dbOrders.length > 0 ? dbOrders.map(o => ({
     ...o,
     orderNumber: o.order_number,
