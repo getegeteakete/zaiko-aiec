@@ -645,7 +645,7 @@ const OrdersPage = () => {
                 <tr key={o.id} className="border-t hover:bg-gray-50 transition">
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">{o.orderNumber}</td>
                   <td className="px-4 py-3 text-sm">{o.customerName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{o.items[0].productName}{o.items.length > 1 ? ` 他${o.items.length - 1}件` : ""}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{o.items?.[0]?.productName||"—"}{o.items?.length||0 > 1 ? ` 他${o.items?.length||0 - 1}件` : ""}</td>
                   <td className="px-4 py-3 text-sm font-bold">¥{fmt(o.total)}</td>
                   <td className="px-4 py-3"><Badge status={o.status} /></td>
                   <td className="px-4 py-3"><Badge status={o.paymentStatus} /></td>
@@ -755,7 +755,7 @@ const CustomersPage = () => {const{customers}=useApp();return(
 );};
 
 // Inventory Page
-const InventoryPage = () => (
+const InventoryPage = () => { const { products } = useApp(); return (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <div><h2 className="font-semibold text-sm">在庫管理</h2><p className="text-xs text-gray-500">在庫状況の確認・入出庫管理・アラート管理</p></div>
@@ -808,10 +808,11 @@ const InventoryPage = () => (
       </div>
     </div>
   </div>
-);
+);};
 
 // Analytics Page
 const AnalyticsPage = () => {
+  const { products, customers } = useApp();
   const catSales = CATEGORIES.filter(c => c !== "すべて").map(cat => ({
     category: cat,
     count: products.filter(p => p.category === cat).length,
@@ -901,7 +902,13 @@ const SettingsPage = () => (
 );
 
 // Payments Page
-const PaymentsPage = () => (
+const PaymentsPage = () => {
+  const { orders } = useApp();
+  const cn_paid = orders.filter(o=>o.paymentStatus==="決済済").reduce((s,o)=>s+o.total,0);
+  const cn_total = orders.reduce((s,o)=>s+o.total,0);
+  const orders_paid = orders.filter(o=>o.paymentStatus==="決済済").length;
+  const orders_unpaid = orders.filter(o=>o.paymentStatus==="未決済").length;
+  return (
   <div className="space-y-4">
     <div><h2 className="font-semibold text-sm">決済管理</h2><p className="text-xs text-gray-500">決済状況の確認と管理を行います</p></div>
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -910,16 +917,18 @@ const PaymentsPage = () => (
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客名","金額","決済方法","決済状況","決済日時"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{orders.map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.paymentMethod}</td><td className="px-4 py-2.5"><Badge status={o.paymentStatus}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
   </div>
-);
+);};
 
 // Shipping Page
-const ShippingPage = () => (
+const ShippingPage = () => {
+  const { orders } = useApp();
+  return (
   <div className="space-y-4">
     <div><h2 className="font-semibold text-sm">発送管理</h2><p className="text-xs text-gray-500">発送処理・追跡番号入力・配送状況管理</p></div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客","商品","ステータス","配送業者","追跡番号"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{orders.map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items[0].productName}</td><td className="px-4 py-2.5"><Badge status={o.status==="配達完了"?"配達完了":o.status==="発送済"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"—"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
+    <tbody>{orders.map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.customerName}</td><td className="px-4 py-2.5 text-sm text-gray-500">{o.items?.[0]?.productName||"—"}</td><td className="px-4 py-2.5"><Badge status={o.status==="配達完了"?"配達完了":o.status==="発送済"?"配送中":"未発送"}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.carrier||"—"}</td><td className="px-4 py-2.5 text-xs font-mono text-gray-400">{o.trackingNumber||"—"}</td></tr>)}</tbody></table></div>
   </div>
-);
+);};
 
 // Procurement Page
 const ProcurementPage = () => (
@@ -935,13 +944,13 @@ const ProcurementPage = () => (
 );
 
 // Pricing Page
-const PricingPage = () => (
+const PricingPage = () => { const { customers } = useApp(); return (
   <div className="space-y-4">
     <h2 className="font-semibold text-sm">価格・掛率管理</h2>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (ステンレス鋼管)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(4800*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
   </div>
-);
+);};
 
 // AI Analytics Page
 const AIAnalyticsPage = () => (
@@ -1045,10 +1054,10 @@ const BuyerProductsPage = () => {
   </div>);
 };
 
-const BuyerOrdersPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">注文履歴</h2>
+const BuyerOrdersPage = () => { const { orders } = useApp(); return (<div className="space-y-4"><h2 className="font-semibold text-sm">注文履歴</h2>
   <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","商品","金額","ステータス","注文日"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-  <tbody>{orders.slice(0,3).map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.items[0].productName}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5"><Badge status={o.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
-</div>);
+  <tbody>{orders.slice(0,3).map(o=><tr key={o.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm text-blue-600 font-medium">{o.orderNumber}</td><td className="px-4 py-2.5 text-sm">{o.items?.[0]?.productName||"—"}</td><td className="px-4 py-2.5 text-sm font-bold">¥{fmt(o.total)}</td><td className="px-4 py-2.5"><Badge status={o.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{o.orderDate}</td></tr>)}</tbody></table></div>
+</div>);};
 
 const BuyerBillingPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">請求・決済</h2>
   <div className="grid grid-cols-2 gap-3"><div className="bg-white rounded-xl border p-4"><p className="text-xs text-gray-500 mb-1">今月の請求額</p><p className="text-xl font-bold">¥{fmt(552500)}</p></div><div className="bg-white rounded-xl border p-4"><p className="text-xs text-gray-500 mb-1">未払い</p><p className="text-xl font-bold text-orange-600">¥{fmt(0)}</p></div></div></div>);
@@ -1072,10 +1081,7 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 </div>);
 
 // Helper computed values for payments page
-const cn_paid = orders.filter(o=>o.paymentStatus==="決済済").reduce((s,o)=>s+o.total,0);
-const cn_total = orders.reduce((s,o)=>s+o.total,0);
-const orders_paid = orders.filter(o=>o.paymentStatus==="決済済").length;
-const orders_unpaid = orders.filter(o=>o.paymentStatus==="未決済").length;
+// (payment stats computed inside PaymentsPage)
 const AIChat = () => {
   const { setAiChatOpen, products: ctxProducts, customers: ctxCustomers } = useApp();
   const [messages, setMessages] = useState([
