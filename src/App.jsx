@@ -112,7 +112,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
       {/* ── Top Bar ── */}
       <div className="bg-industrial text-white/70 text-xs py-1.5 px-4 flex items-center justify-between">
-        <span>シンガタ株式会社 - 法人向け紙袋・包装資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
+        <span>シンガタ株式会社 ｜ 法人向け紙袋・包装資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
           <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ログイン</button>
@@ -152,11 +152,11 @@ const LandingPage = () => {
       <section className="hero-banner py-10 sm:py-14 px-4 relative">
         <div className="container relative z-10 flex flex-col sm:flex-row items-center gap-8">
           <div className="flex-1">
-            <div className="inline-block mb-3 px-3 py-1 rounded text-xs font-semibold" style={{background:'rgba(212,147,10,.15)',color:'var(--amber-400)'}}>法人専用 ｜ 掛率対応 ｜ AI在庫提案</div>
+            <div className="inline-block mb-3 px-3 py-1 rounded text-xs font-semibold" style={{background:'rgba(212,147,10,.15)',color:'var(--amber-400)'}}>法人専用 ｜ 掛売対応 ｜ 最短翌日配送</div>
             <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
-              紙袋・包装資材の<br/><span className="text-gradient">プロ向け紙袋卸売</span>
+              紙袋・包装資材の<br/><span className="text-gradient">卸売専門サイト</span>
             </h1>
-            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">手提げ袋・ラミネート袋・ギフト袋・宅配袋など、200種類以上の紙袋をオンラインで。小ロットから大量注文まで、AIが最適な提案をご案内します。</p>
+            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">手提げ袋・ラミネート袋・ギフト袋・宅配袋など、200種類以上の紙袋を取り揃え。小ロットから大量注文まで対応いたします。</p>
             <div className="flex gap-3">
               <button onClick={() => document.getElementById('products')?.scrollIntoView({behavior:'smooth'})} className="btn-primary px-6 py-3 text-sm font-bold" style={{background:'var(--amber-500)'}}>商品を見る ↓</button>
               <button onClick={() => navigate("buyer")} className="px-6 py-3 border border-white/20 text-white/80 rounded text-sm font-medium hover:bg-white/10 transition" style={{borderRadius:'var(--radius)'}}>マイページ</button>
@@ -176,7 +176,7 @@ const LandingPage = () => {
 
       {/* ── KPI Strip ── */}
       <div className="container -mt-5 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[{v:"200+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"AI",l:"在庫自動提案",Ic:Icons.brain}].map((k,i) => (
+        {[{v:"200+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"掛売",l:"法人後払い対応",Ic:Icons.orders}].map((k,i) => (
           <div key={i} className="card p-4 flex items-center gap-3 animate-fade-up" style={{animationDelay:`${i*0.08}s`}}>
             <k.Ic size={24}/>
             <div><p className="font-display font-extrabold text-lg" style={{color:'var(--navy-900)'}}>{k.v}</p><p className="text-xs" style={{color:'var(--slate-400)'}}>{k.l}</p></div>
@@ -224,14 +224,23 @@ const LandingPage = () => {
 
       {/* ── Footer ── */}
       <footer className="bg-industrial text-white/40 py-8 px-4 relative">
-        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-2"><img src="/logo.png" alt="シンガタ" className="h-6 w-auto opacity-60"/></div>
-          <div className="flex gap-4 text-xs">
-            <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ページ</button>
-            <button onClick={() => navigate("buyer")} className="hover:text-white transition">マイページ</button>
-            <button onClick={() => navigate("buyer/chat")} className="hover:text-white transition">お問い合わせ</button>
+        <div className="container relative z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2"><img src="/logo.png" alt="シンガタ" className="h-6 w-auto opacity-60"/></div>
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <button onClick={() => navigate("buyer")} className="hover:text-white transition">マイページ</button>
+              <button onClick={() => navigate("ec")} className="hover:text-white transition">商品一覧</button>
+              <button onClick={() => navigate("buyer/chat")} className="hover:text-white transition">お問い合わせ</button>
+            </div>
           </div>
-          <p className="text-xs">© 2024 シンガタ株式会社</p>
+          <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <button onClick={() => navigate("privacy")} className="hover:text-white transition">プライバシーポリシー</button>
+              <button onClick={() => navigate("tokushoho")} className="hover:text-white transition">特定商取引法に基づく表記</button>
+              <button onClick={() => navigate("privacy")} className="hover:text-white transition">個人情報保護方針</button>
+            </div>
+            <p className="text-xs">© 2024 シンガタ株式会社</p>
+          </div>
         </div>
       </footer>
     </div>
@@ -1472,6 +1481,65 @@ const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-s
 
 // Helper computed values for payments page
 // (payment stats computed inside PaymentsPage)
+// ═══ Legal Pages ═══
+const PrivacyPage = () => {
+  const { navigate } = useApp();
+  return (
+    <div className="min-h-screen bg-white">
+      <header className="border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={() => navigate("landing")} className="text-blue-600 text-sm">← トップに戻る</button>
+      </header>
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        <h1 className="text-xl font-bold">プライバシーポリシー / 個人情報保護方針</h1>
+        <p className="text-sm text-gray-600">最終更新日：2024年1月1日</p>
+        <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+          <section><h2 className="font-bold text-base mb-2">1. 個人情報の取得について</h2><p>当社は、適法かつ公正な手段により個人情報を取得いたします。ご注文・お問い合わせ・会員登録等の際に、お名前、ご住所、電話番号、メールアドレス等の個人情報をお伺いすることがあります。</p></section>
+          <section><h2 className="font-bold text-base mb-2">2. 個人情報の利用目的</h2><p>当社は、取得した個人情報を以下の目的で利用いたします。</p><ul className="list-disc ml-5 mt-1 space-y-1"><li>商品の発送およびご連絡のため</li><li>ご注文内容の確認およびお問い合わせへの対応のため</li><li>当社サービスの改善および新サービス開発のため</li><li>キャンペーン・新商品等のご案内（ご同意いただいた場合のみ）</li></ul></section>
+          <section><h2 className="font-bold text-base mb-2">3. 個人情報の第三者提供</h2><p>当社は、法令に基づく場合を除き、ご本人の同意なく個人情報を第三者に提供することはありません。ただし、配送業務等を委託する場合、必要な範囲で委託先に個人情報を提供することがあります。</p></section>
+          <section><h2 className="font-bold text-base mb-2">4. 個人情報の管理</h2><p>当社は、個人情報の正確性を保ち、不正アクセス・紛失・破損・改ざん・漏洩などを防止するため、適切な安全管理措置を講じます。</p></section>
+          <section><h2 className="font-bold text-base mb-2">5. Cookieの使用について</h2><p>当サイトでは、サービスの利便性向上のためCookieを使用しています。ブラウザの設定によりCookieの受け取りを拒否することができますが、一部のサービスがご利用いただけなくなる場合があります。</p></section>
+          <section><h2 className="font-bold text-base mb-2">6. お問い合わせ</h2><p>個人情報の取り扱いに関するお問い合わせは、下記までご連絡ください。</p><p className="mt-2">シンガタ株式会社<br/>Email: info@singata.co.jp<br/>TEL: 03-0000-0000</p></section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TokushohoPage = () => {
+  const { navigate } = useApp();
+  return (
+    <div className="min-h-screen bg-white">
+      <header className="border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={() => navigate("landing")} className="text-blue-600 text-sm">← トップに戻る</button>
+      </header>
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        <h1 className="text-xl font-bold">特定商取引法に基づく表記</h1>
+        <div className="text-sm text-gray-700">
+          <table className="w-full"><tbody>
+            {[
+              ["販売業者", "シンガタ株式会社"],
+              ["代表責任者", "代表取締役（氏名）"],
+              ["所在地", "〒000-0000 東京都○○区○○ 0-0-0"],
+              ["電話番号", "03-0000-0000（受付時間：平日9:00〜18:00）"],
+              ["メールアドレス", "info@singata.co.jp"],
+              ["URL", "https://zaiko-aiec.vercel.app"],
+              ["商品の販売価格", "各商品ページに記載（税別表示）"],
+              ["商品代金以外の必要料金", "消費税（10%）、配送料（別途お見積り）"],
+              ["お支払い方法", "銀行振込、クレジットカード、掛売（法人のみ）"],
+              ["お支払い時期", "銀行振込：ご注文から7日以内 / 掛売：締め日に応じた請求"],
+              ["商品の引渡し時期", "在庫がある場合：ご注文確認後1〜3営業日以内に発送"],
+              ["返品・交換について", "商品到着後7日以内にご連絡ください。未開封・未使用の場合に限り返品・交換を承ります。お客様都合の場合、返送料はお客様負担となります。"],
+              ["不良品について", "商品の品質には万全を期しておりますが、万一不良品がございましたら、送料当社負担で交換させていただきます。"],
+            ].map(([k,v],i) => (
+              <tr key={i} className="border-b"><td className="py-3 pr-4 font-medium w-48 align-top">{k}</td><td className="py-3">{v}</td></tr>
+            ))}
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AIChat = () => {
   const { setAiChatOpen, products: ctxProducts, customers: ctxCustomers } = useApp();
   const [messages, setMessages] = useState([
@@ -1696,7 +1764,7 @@ export default function App() {
   useEffect(() => {
     const titles = {
       landing: "シンガタ株式会社 - BtoB卸デモサイト",
-      ec: "商品一覧 | シンガタ", cart: "カート | シンガタ",
+      ec: "商品一覧 | シンガタ", cart: "カート | シンガタ", privacy: "プライバシーポリシー | シンガタ", tokushoho: "特定商取引法に基づく表記 | シンガタ",
       operator: "ダッシュボード | シンガタ管理",
       "operator/orders": "受注管理 | シンガタ", "operator/payments": "決済管理 | シンガタ", "operator/billing": "請求管理 | シンガタ",
       "operator/shipping": "発送管理 | シンガタ", "operator/products": "商品管理 | シンガタ",
@@ -1763,6 +1831,8 @@ export default function App() {
       {page === "landing" && <LandingPage />}
       {page === "ec" && <ECStore />}
       {page === "cart" && <CartPage />}
+      {page === "privacy" && <PrivacyPage />}
+      {page === "tokushoho" && <TokushohoPage />}
       {page.startsWith("operator") && <OperatorPage />}
       {page.startsWith("buyer") && <BuyerPage />}
     </AppContext.Provider>
