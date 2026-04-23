@@ -1632,10 +1632,29 @@ const AIArticlesPage = () => {
   const arts = [{id:"a1",title:"紙袋の種類と選び方ガイド",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：エコ素材紙袋シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
   return (<div className="space-y-4">
     <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button onClick={()=>setAiChatOpen(true)} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-      {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-3"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-lg font-bold">{k.v}</p></div>)}
     </div>
-    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["タイトル","カテゴリ","ステータス","文字数","日付"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+
+    {/* Mobile: Card Layout */}
+    <div className="md:hidden space-y-3">
+      {arts.map(a=>(
+        <div key={a.id} className="bg-white rounded-xl border p-4">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h3 className="text-sm font-bold flex-1">{a.title}</h3>
+            <Badge status={a.status}/>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] px-2 py-0.5 rounded bg-purple-50 text-purple-600 font-medium">{a.category}</span>
+            <span className="text-xs text-gray-400">{fmt(a.chars)}文字</span>
+            <span className="text-xs text-gray-400">{a.date}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Desktop: Table */}
+    <div className="hidden md:block bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["タイトル","カテゴリ","ステータス","文字数","日付"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{arts.map(a=><tr key={a.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{a.title}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-600">{a.category}</span></td><td className="px-4 py-2.5"><Badge status={a.status}/></td><td className="px-4 py-2.5 text-sm text-gray-500">{fmt(a.chars)}文字</td><td className="px-4 py-2.5 text-sm text-gray-500">{a.date}</td></tr>)}</tbody></table></div>
   </div>);
 };
@@ -1669,8 +1688,23 @@ const MasterPage = () => {
   const items = data[tab]||[];
   return (<div className="space-y-4">
     <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">マスタ管理</h2><p className="text-xs text-gray-500">商品カテゴリ、配送方法、決済方法などのマスタデータ管理</p></div><button onClick={()=>{const m=prompt("マスタ名を入力してください"); if(m) alert("マスタ '"+m+"' を登録しました");}} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規登録</button></div>
-    <div className="flex gap-2">{["商品カテゴリ","配送方法","決済方法"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-3 py-1.5 rounded-lg text-sm transition ${tab===t?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{t}</button>)}</div>
-    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["コード","名称","ステータス"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <div className="flex gap-2 overflow-x-auto">{["商品カテゴリ","配送方法","決済方法"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap transition ${tab===t?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{t}</button>)}</div>
+
+    {/* Mobile: List Layout */}
+    <div className="md:hidden space-y-2">
+      {items.map((m,i)=>(
+        <div key={i} className="bg-white rounded-xl border p-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded">{m.code}</span>
+            <span className="text-sm font-medium">{m.name}</span>
+          </div>
+          <span className="text-[10px] px-2 py-0.5 rounded bg-green-100 text-green-800 shrink-0">{m.status}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* Desktop: Table */}
+    <div className="hidden md:block bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["コード","名称","ステータス"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{items.map((m,i)=><tr key={i} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-mono text-gray-400">{m.code}</td><td className="px-4 py-2.5 text-sm font-medium">{m.name}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">{m.status}</span></td></tr>)}</tbody></table></div>
   </div>);
 };
