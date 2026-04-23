@@ -1573,8 +1573,38 @@ const ProcurementPage = () => {
 // Pricing Page
 const PricingPage = () => { const { customers } = useApp(); return (
   <div className="space-y-4">
-    <h2 className="font-semibold text-sm">価格・掛率管理</h2>
-    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (クラフト手提げ袋)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <div><h2 className="font-semibold text-sm">価格・掛率管理</h2><p className="text-xs text-gray-500">顧客ティア別の掛率と適用価格の管理</p></div>
+
+    {/* Mobile: Card Layout */}
+    <div className="md:hidden space-y-3">
+      {customers.map(c => {
+        const rate = c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;
+        return (
+          <div key={c.id} className="bg-white rounded-xl border p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-bold">{c.companyName}</p>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${tierColors[c.tier]}`}>{c.tier}</span>
+              </div>
+              <button onClick={()=>{const r=prompt("新しい掛率(%)を入力","85"); if(r) alert("掛率を"+r+"%に変更しました");}} className="text-xs text-blue-600 font-medium px-3 py-1.5 bg-blue-50 rounded-lg">変更</button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+                <p className="text-[10px] text-gray-400 mb-0.5">掛率</p>
+                <p className="text-lg font-bold text-blue-600">{(rate*100).toFixed(0)}%</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+                <p className="text-[10px] text-gray-400 mb-0.5">適用価格例</p>
+                <p className="text-lg font-bold">¥{fmt(Math.round(18*rate))}<span className="text-[10px] text-gray-400">/枚</span></p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Desktop: Table Layout */}
+    <div className="hidden md:block bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (クラフト手提げ袋)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(18*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>{const r=prompt("新しい掛率(%)を入力してください","85"); if(r) alert("掛率を"+r+"%に変更しました");}} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
   </div>
 );};
