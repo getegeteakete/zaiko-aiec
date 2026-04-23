@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 import { supabase } from "./lib/supabase";
-import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange, useBillingSettings, useInvoices, upsertBillingSetting, createInvoice, updateInvoiceStatus } from "./lib/hooks";
+import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, createProduct, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange, useBillingSettings, useInvoices, upsertBillingSetting, createInvoice, updateInvoiceStatus } from "./lib/hooks";
 import { CategoryIcon, Icons } from "./warehouse-icons";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -627,14 +627,24 @@ const DashboardPage = () => {
 
 // Orders Page
 const OrdersPage = () => {
-  const { orders, navigate, refetchOrders } = useApp();
+  const { orders, navigate, refetchOrders, customers, products } = useApp();
   const [filter, setFilter] = useState("all");
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ customerName: "", productName: "", quantity: 1, unitPrice: 0, paymentMethod: "銀行振込" });
   const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter);
   const STATUSES = ["確認待ち","確認済","処理中","発送済","配達完了","キャンセル"];
-  const PAY_STATUSES = ["未決済","決済済"];
 
   const handleStatusChange = async (id, newStatus) => {
     await updateOrderStatus(id, newStatus);
+    refetchOrders();
+  };
+
+  const handleCreateOrder = async () => {
+    if (!form.customerName || !form.productName) return alert("顧客名と商品名を入力してください");
+    const total = form.quantity * form.unitPrice;
+    await createOrder({ customerName: form.customerName, items: [{ name: form.productName, quantity: form.quantity, price: form.unitPrice }], paymentMethod: form.paymentMethod, total: Math.floor(total * 1.1) });
+    setShowForm(false);
+    setForm({ customerName: "", productName: "", quantity: 1, unitPrice: 0, paymentMethod: "銀行振込" });
     refetchOrders();
   };
 
@@ -642,8 +652,39 @@ const OrdersPage = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <div><h2 className="font-semibold text-sm">受注管理</h2><p className="text-xs text-gray-500">注文の確認・処理・ステータス管理</p></div>
-        <button onClick={()=>alert("新規受注登録フォームを表示します")} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規受注登録</button>
+        <button onClick={()=>setShowForm(!showForm)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">{showForm ? "✕ 閉じる" : "新規受注登録"}</button>
       </div>
+
+      {showForm && (
+        <div className="bg-white rounded-xl border p-5 space-y-3">
+          <h3 className="font-semibold text-sm border-b pb-2">新規受注登録</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div><label className="text-xs text-gray-500 block mb-1">顧客名 *</label>
+              <select value={form.customerName} onChange={e=>setForm({...form, customerName: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                <option value="">選択してください</option>
+                {customers.map(c=><option key={c.id} value={c.companyName}>{c.companyName}</option>)}
+              </select></div>
+            <div><label className="text-xs text-gray-500 block mb-1">商品名 *</label>
+              <select value={form.productName} onChange={e=>{const p=products.find(x=>x.name===e.target.value); setForm({...form, productName: e.target.value, unitPrice: p?.price||0});}} className="w-full border rounded-lg px-3 py-2 text-sm">
+                <option value="">選択してください</option>
+                {products.map(p=><option key={p.id} value={p.name}>{p.name} (¥{fmt(p.price)})</option>)}
+              </select></div>
+            <div><label className="text-xs text-gray-500 block mb-1">数量</label>
+              <input type="number" min="1" value={form.quantity} onChange={e=>setForm({...form, quantity: parseInt(e.target.value)||1})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">単価</label>
+              <input type="number" value={form.unitPrice} onChange={e=>setForm({...form, unitPrice: parseInt(e.target.value)||0})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">決済方法</label>
+              <select value={form.paymentMethod} onChange={e=>setForm({...form, paymentMethod: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                {["銀行振込","クレジットカード","現金","コンビニ決済"].map(m=><option key={m}>{m}</option>)}
+              </select></div>
+            <div className="flex items-end"><p className="text-sm font-bold mb-2">合計: ¥{fmt(Math.floor(form.quantity * form.unitPrice * 1.1))}(税込)</p></div>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button onClick={handleCreateOrder} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">注文を登録</button>
+            <button onClick={()=>setShowForm(false)} className="px-4 py-2 bg-white border text-gray-600 rounded-lg text-sm">キャンセル</button>
+          </div>
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 mb-2">
         {[{ v: "all", l: "すべて" }, { v: "確認待ち", l: "確認待ち" }, { v: "確認済", l: "確認済" }, { v: "処理中", l: "処理中" }, { v: "発送済", l: "発送済" }, { v: "配達完了", l: "配達完了" }].map(f => (
           <button key={f.v} onClick={() => setFilter(f.v)} className={`px-3 py-1.5 rounded-lg text-sm transition ${filter === f.v ? "bg-blue-600 text-white" : "bg-white border text-gray-600"}`}>{f.l}</button>
@@ -685,16 +726,56 @@ const OrdersPage = () => {
 
 // Products Page
 const ProductsPage = () => {
-  const { products } = useApp();
-  const [localProducts, setLocalProducts] = useState([]);
+  const { products, refetchProducts } = useApp();
   const [editing, setEditing] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ name: "", category: "手提げ袋", sku: "", price: 0, stock: 0, unit: "枚", description: "" });
+
+  const handleCreate = async () => {
+    if (!form.name || !form.sku) return alert("商品名とSKUを入力してください");
+    await createProduct({ ...form, image: "bag", status: "正常", rating: 4.0 });
+    setShowForm(false);
+    setForm({ name: "", category: "手提げ袋", sku: "", price: 0, stock: 0, unit: "枚", description: "" });
+    refetchProducts();
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div><h2 className="font-semibold text-sm">商品管理</h2><p className="text-xs text-gray-500">商品マスタの登録・編集・在庫確認（{products.length}件）</p></div>
-        <button onClick={()=>alert("新規商品登録フォームを表示します")} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-1"><Icons.plus size={16} /> 新規商品登録</button>
+        <button onClick={()=>setShowForm(!showForm)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-1"><Icons.plus size={16} /> {showForm ? "閉じる" : "新規商品登録"}</button>
       </div>
+
+      {showForm && (
+        <div className="bg-white rounded-xl border p-5 space-y-3">
+          <h3 className="font-semibold text-sm border-b pb-2">新規商品登録</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div><label className="text-xs text-gray-500 block mb-1">商品名 *</label>
+              <input value={form.name} onChange={e=>setForm({...form, name: e.target.value})} placeholder="例: クラフト手提げ袋 特大" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">SKU *</label>
+              <input value={form.sku} onChange={e=>setForm({...form, sku: e.target.value})} placeholder="例: KB-XL-001" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">カテゴリ</label>
+              <select value={form.category} onChange={e=>setForm({...form, category: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                {CATEGORIES.filter(c=>c!=="すべて").map(c=><option key={c}>{c}</option>)}
+              </select></div>
+            <div><label className="text-xs text-gray-500 block mb-1">基準価格(税抜)</label>
+              <input type="number" value={form.price} onChange={e=>setForm({...form, price: parseInt(e.target.value)||0})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">初期在庫</label>
+              <input type="number" value={form.stock} onChange={e=>setForm({...form, stock: parseInt(e.target.value)||0})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+            <div><label className="text-xs text-gray-500 block mb-1">単位</label>
+              <select value={form.unit} onChange={e=>setForm({...form, unit: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                {["枚","個","本","箱","セット","巻"].map(u=><option key={u}>{u}</option>)}
+              </select></div>
+            <div className="col-span-2 md:col-span-3"><label className="text-xs text-gray-500 block mb-1">説明・スペック</label>
+              <input value={form.description} onChange={e=>setForm({...form, description: e.target.value})} placeholder="例: W400×D180×H550mm。未晒クラフト紙 120g/㎡。" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button onClick={handleCreate} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">商品を登録</button>
+            <button onClick={()=>setShowForm(false)} className="px-4 py-2 bg-white border text-gray-600 rounded-lg text-sm">キャンセル</button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-xl border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -729,12 +810,55 @@ const ProductsPage = () => {
 };
 
 // Customers Page
-const CustomersPage = () => {const{customers}=useApp();return(
+const CustomersPage = () => {
+  const { customers, refetchCustomers } = useApp();
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ company_name: "", contact_name: "", email: "", phone: "", address: "", tier: "スタンダード", payment_terms: "月末締め翌月末払い" });
+
+  const handleCreate = async () => {
+    if (!form.company_name) return alert("会社名を入力してください");
+    await createCustomer({ ...form, price_rate: form.tier === "プラチナ" ? 0.85 : form.tier === "ゴールド" ? 0.88 : form.tier === "シルバー" ? 0.92 : 0.95 });
+    setShowForm(false);
+    setForm({ company_name: "", contact_name: "", email: "", phone: "", address: "", tier: "スタンダード", payment_terms: "月末締め翌月末払い" });
+    refetchCustomers();
+  };
+
+  return (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <div><h2 className="font-semibold text-sm">顧客管理</h2><p className="text-xs text-gray-500">取引先情報の管理・取引履歴・掛率設定</p></div>
-      <button onClick={()=>alert("新規顧客登録フォームを表示します")} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規顧客登録</button>
+      <button onClick={()=>setShowForm(!showForm)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">{showForm ? "✕ 閉じる" : "新規顧客登録"}</button>
     </div>
+
+    {showForm && (
+      <div className="bg-white rounded-xl border p-5 space-y-3">
+        <h3 className="font-semibold text-sm border-b pb-2">新規顧客登録</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div><label className="text-xs text-gray-500 block mb-1">会社名 *</label>
+            <input value={form.company_name} onChange={e=>setForm({...form, company_name: e.target.value})} placeholder="例: 株式会社サンプル" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">担当者名</label>
+            <input value={form.contact_name} onChange={e=>setForm({...form, contact_name: e.target.value})} placeholder="例: 山田 太郎" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">メール</label>
+            <input type="email" value={form.email} onChange={e=>setForm({...form, email: e.target.value})} placeholder="例: info@example.jp" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">電話番号</label>
+            <input value={form.phone} onChange={e=>setForm({...form, phone: e.target.value})} placeholder="例: 03-1234-5678" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">ティア</label>
+            <select value={form.tier} onChange={e=>setForm({...form, tier: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+              {["プラチナ","ゴールド","シルバー","スタンダード"].map(t=><option key={t}>{t}</option>)}
+            </select></div>
+          <div><label className="text-xs text-gray-500 block mb-1">支払条件</label>
+            <select value={form.payment_terms} onChange={e=>setForm({...form, payment_terms: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+              {["月末締め翌月末払い","月末締め翌月15日払い","月末締め翌月20日払い","即日払い"].map(t=><option key={t}>{t}</option>)}
+            </select></div>
+          <div className="col-span-2 md:col-span-3"><label className="text-xs text-gray-500 block mb-1">住所</label>
+            <input value={form.address} onChange={e=>setForm({...form, address: e.target.value})} placeholder="例: 東京都渋谷区..." className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button onClick={handleCreate} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">顧客を登録</button>
+          <button onClick={()=>setShowForm(false)} className="px-4 py-2 bg-white border text-gray-600 rounded-lg text-sm">キャンセル</button>
+        </div>
+      </div>
+    )}
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div className="bg-white rounded-xl border p-5">
         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総顧客数</p>
@@ -1145,17 +1269,69 @@ const ShippingPage = () => {
 );};
 
 // Procurement Page
-const ProcurementPage = () => (
+const ProcurementPage = () => {
+  const { products, refetchProducts } = useApp();
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ supplier: "マルタカパルプ株式会社", productName: "", quantity: 0, unitPrice: 0, expectedDate: "" });
+  const suppliers = [{n:"マルタカパルプ株式会社"},{n:"大昭和紙工産業株式会社"},{n:"福助工業株式会社"},{n:"シモジマ株式会社"}];
+
+  const handleCreate = async () => {
+    if (!form.productName || form.quantity <= 0) return alert("商品名と数量を入力してください");
+    const poNum = `PUR-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+    await supabase.from('purchase_orders').insert({
+      po_number: poNum, supplier_name: form.supplier, product_name: form.productName,
+      quantity: form.quantity, unit_price: form.unitPrice, total: form.quantity * form.unitPrice,
+      status: "発注済", order_date: new Date().toISOString().split('T')[0],
+      expected_date: form.expectedDate || null,
+    });
+    setShowForm(false);
+    setForm({ supplier: "マルタカパルプ株式会社", productName: "", quantity: 0, unitPrice: 0, expectedDate: "" });
+    alert("発注を登録しました: " + poNum);
+  };
+
+  return (
   <div className="space-y-4">
-    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">仕入管理</h2><p className="text-xs text-gray-500">発注管理・仕入れ先管理・在庫補充提案</p></div><button onClick={()=>alert("新規発注フォームを表示します")} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規発注</button></div>
+    <div className="flex items-center justify-between">
+      <div><h2 className="font-semibold text-sm">仕入管理</h2><p className="text-xs text-gray-500">発注管理・仕入れ先管理・在庫補充提案</p></div>
+      <button onClick={()=>setShowForm(!showForm)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">{showForm ? "✕ 閉じる" : "新規発注"}</button>
+    </div>
+
+    {showForm && (
+      <div className="bg-white rounded-xl border p-5 space-y-3">
+        <h3 className="font-semibold text-sm border-b pb-2">新規発注登録</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div><label className="text-xs text-gray-500 block mb-1">仕入れ先 *</label>
+            <select value={form.supplier} onChange={e=>setForm({...form, supplier: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+              {suppliers.map(s=><option key={s.n} value={s.n}>{s.n}</option>)}
+            </select></div>
+          <div><label className="text-xs text-gray-500 block mb-1">商品名 *</label>
+            <select value={form.productName} onChange={e=>{const p=products.find(x=>x.name===e.target.value); setForm({...form, productName: e.target.value, unitPrice: p?.price||0});}} className="w-full border rounded-lg px-3 py-2 text-sm">
+              <option value="">選択してください</option>
+              {products.map(p=><option key={p.id} value={p.name}>{p.name}</option>)}
+            </select></div>
+          <div><label className="text-xs text-gray-500 block mb-1">発注数量 *</label>
+            <input type="number" min="1" value={form.quantity} onChange={e=>setForm({...form, quantity: parseInt(e.target.value)||0})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">仕入単価</label>
+            <input type="number" value={form.unitPrice} onChange={e=>setForm({...form, unitPrice: parseInt(e.target.value)||0})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div><label className="text-xs text-gray-500 block mb-1">納品予定日</label>
+            <input type="date" value={form.expectedDate} onChange={e=>setForm({...form, expectedDate: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
+          <div className="flex items-end"><p className="text-sm font-bold mb-2">合計: ¥{fmt(form.quantity * form.unitPrice)}</p></div>
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button onClick={handleCreate} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">発注を登録</button>
+          <button onClick={()=>setShowForm(false)} className="px-4 py-2 bg-white border text-gray-600 rounded-lg text-sm">キャンセル</button>
+        </div>
+      </div>
+    )}
+
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {[{l:"発注総数",v:"24件",c:"今月: 8件"},{l:"今月の仕入れ額",v:`¥${fmt(3850000)}`,c:`累計: ¥${fmt(46200000)}`},{l:"処理待ち",v:"3件"},{l:"納品待ち",v:"5件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">仕入れ先一覧</h3>
-      {[{n:"マルタカパルプ株式会社",c:"田中 太郎",t:"月末締め翌月末払い"},{n:"大昭和紙工産業株式会社",c:"佐藤 花子",t:"月末締め翌月15日払い"},{n:"福助工業株式会社",c:"鈴木 一郎",t:"月末締め翌月末払い"},{n:"シモジマ株式会社",c:"山田 次郎",t:"月末締め翌月20日払い"}].map((s,i)=><div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2"><div><p className="text-sm font-medium">{s.n}</p><p className="text-xs text-gray-500">{s.c}</p></div><span className="text-xs text-gray-400">{s.t}</span></div>)}
+      {suppliers.map((s,i)=><div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2"><div><p className="text-sm font-medium">{s.n}</p></div></div>)}
     </div>
   </div>
-);
+);};
 
 // Pricing Page
 const PricingPage = () => { const { customers } = useApp(); return (
