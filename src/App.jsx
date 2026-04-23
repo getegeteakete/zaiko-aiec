@@ -617,9 +617,16 @@ const DashboardPage = () => {
 
 // Orders Page
 const OrdersPage = () => {
-  const { orders, navigate } = useApp();
+  const { orders, navigate, refetchOrders } = useApp();
   const [filter, setFilter] = useState("all");
   const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter);
+  const STATUSES = ["確認待ち","確認済","処理中","発送済","配達完了","キャンセル"];
+  const PAY_STATUSES = ["未決済","決済済"];
+
+  const handleStatusChange = async (id, newStatus) => {
+    await updateOrderStatus(id, newStatus);
+    refetchOrders();
+  };
 
   return (
     <div className="space-y-4">
@@ -637,7 +644,7 @@ const OrdersPage = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {["注文番号", "顧客名", "商品", "合計", "ステータス", "支払い", "日付"].map(h => (
+                {["注文番号", "顧客名", "商品", "合計", "ステータス", "決済", "日付"].map(h => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -647,9 +654,13 @@ const OrdersPage = () => {
                 <tr key={o.id} className="border-t hover:bg-gray-50 transition">
                   <td className="px-4 py-3 text-sm font-medium text-blue-600">{o.orderNumber}</td>
                   <td className="px-4 py-3 text-sm">{o.customerName}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{o.items?.[0]?.productName||"—"}{o.items?.length||0 > 1 ? ` 他${o.items?.length||0 - 1}件` : ""}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{o.items?.[0]?.productName||"—"}{(o.items?.length||0) > 1 ? ` 他${(o.items?.length||0) - 1}件` : ""}</td>
                   <td className="px-4 py-3 text-sm font-bold">¥{fmt(o.total)}</td>
-                  <td className="px-4 py-3"><Badge status={o.status} /></td>
+                  <td className="px-4 py-3">
+                    <select value={o.status} onChange={e => handleStatusChange(o.id, e.target.value)} className="text-xs border rounded px-1.5 py-1 bg-transparent">
+                      {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </td>
                   <td className="px-4 py-3"><Badge status={o.paymentStatus} /></td>
                   <td className="px-4 py-3 text-sm text-gray-500">{o.orderDate}</td>
                 </tr>
@@ -757,18 +768,34 @@ const CustomersPage = () => {const{customers}=useApp();return(
 );};
 
 // Inventory Page
-const InventoryPage = () => { const { products } = useApp(); return (
+const InventoryPage = () => {
+  const { products, refetchProducts } = useApp();
+  const [adjusting, setAdjusting] = useState(null);
+  const [adjQty, setAdjQty] = useState(0);
+  const [adjType, setAdjType] = useState("入庫");
+  const [adjNote, setAdjNote] = useState("");
+
+  const handleAdjust = async () => {
+    if (!adjusting || adjQty <= 0) return;
+    const p = products.find(x => x.id === adjusting);
+    const newStock = adjType === "入庫" ? p.stock + adjQty : Math.max(0, p.stock - adjQty);
+    await updateStock(adjusting, newStock);
+    await logInventoryChange(adjusting, p.name, adjType, adjQty, adjNote || `${adjType} ${adjQty}${p.unit}`);
+    setAdjusting(null); setAdjQty(0); setAdjNote("");
+    refetchProducts();
+  };
+
+  return (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <div><h2 className="font-semibold text-sm">在庫管理</h2><p className="text-xs text-gray-500">在庫状況の確認・入出庫管理・アラート管理</p></div>
-      <div className="flex gap-2"><button onClick={()=>alert("入庫登録フォームを表示します")} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">入庫登録</button><button onClick={()=>alert("出庫登録フォームを表示します")} className="px-3 py-1.5 bg-white border text-gray-600 rounded-lg text-sm">出庫登録</button><button onClick={()=>alert("棚卸し処理を開始します")} className="px-3 py-1.5 bg-white border text-gray-600 rounded-lg text-sm">棚卸し</button></div>
     </div>
     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
       {[
         { label: "総アイテム", value: products.length, color: "text-blue-600" },
         { label: "適正在庫", value: products.filter(p => p.stock >= 50).length, color: "text-green-600" },
         { label: "低在庫", value: products.filter(p => p.stock < 50 && p.stock > 0).length, color: "text-yellow-600" },
-        { label: "欠品", value: 0, color: "text-red-600" },
+        { label: "欠品", value: products.filter(p => p.stock <= 0).length, color: "text-red-600" },
       ].map((k, i) => (
         <div key={i} className="bg-white rounded-xl border p-5">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{k.label}</p>
@@ -776,18 +803,39 @@ const InventoryPage = () => { const { products } = useApp(); return (
         </div>
       ))}
     </div>
+
+    {adjusting && (() => { const p = products.find(x=>x.id===adjusting); return (
+      <div className="bg-white rounded-xl border p-5 space-y-3">
+        <h3 className="font-semibold text-sm">在庫調整: {p?.name}</h3>
+        <div className="flex gap-3 items-end flex-wrap">
+          <div><label className="text-xs text-gray-500 block mb-1">種別</label>
+            <select value={adjType} onChange={e=>setAdjType(e.target.value)} className="border rounded-lg px-3 py-2 text-sm"><option>入庫</option><option>出庫</option><option>棚卸し</option></select>
+          </div>
+          <div><label className="text-xs text-gray-500 block mb-1">数量</label>
+            <input type="number" min="1" value={adjQty} onChange={e=>setAdjQty(parseInt(e.target.value)||0)} className="border rounded-lg px-3 py-2 text-sm w-24"/>
+          </div>
+          <div className="flex-1"><label className="text-xs text-gray-500 block mb-1">備考</label>
+            <input value={adjNote} onChange={e=>setAdjNote(e.target.value)} placeholder="理由・メモ" className="border rounded-lg px-3 py-2 text-sm w-full"/>
+          </div>
+          <button onClick={handleAdjust} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">確定</button>
+          <button onClick={()=>setAdjusting(null)} className="px-4 py-2 bg-white border rounded-lg text-sm">キャンセル</button>
+        </div>
+        <p className="text-xs text-gray-400">現在庫: {p?.stock}{p?.unit} → 調整後: {adjType==="入庫" ? p?.stock+adjQty : Math.max(0,p?.stock-adjQty)}{p?.unit}</p>
+      </div>
+    );})()}
+
     <div className="bg-white rounded-xl border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              {["", "商品名", "SKU", "現在庫", "ステータス", "在庫バー"].map(h => (
+              {["", "商品名", "SKU", "現在庫", "ステータス", "在庫バー", "操作"].map(h => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {[...PRODUCTS].sort((a, b) => a.stock - b.stock).map(p => {
+            {[...products].sort((a, b) => a.stock - b.stock).map(p => {
               const pct = Math.min(p.stock / 200 * 100, 100);
               const barColor = p.stock < 35 ? "bg-red-500" : p.stock < 60 ? "bg-yellow-500" : "bg-green-500";
               return (
@@ -797,10 +845,13 @@ const InventoryPage = () => { const { products } = useApp(); return (
                   <td className="px-4 py-3 text-xs text-gray-400 font-mono">{p.sku}</td>
                   <td className="px-4 py-3 text-sm font-bold">{p.stock}{p.unit}</td>
                   <td className="px-4 py-3">
-                    {p.stock < 35 ? <Badge status="危険" /> : p.stock < 60 ? <span className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-800">低在庫</span> : <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">適正</span>}
+                    {p.stock < 20 ? <Badge status="危険" /> : p.stock < 50 ? <span className="text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-800">低在庫</span> : <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">適正</span>}
                   </td>
                   <td className="px-4 py-3 w-40">
                     <div className="w-full bg-gray-100 rounded-full h-2"><div className={`h-2 rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} /></div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button onClick={()=>{setAdjusting(p.id);setAdjQty(0);setAdjType("入庫");}} className="text-xs text-blue-600 hover:underline">調整</button>
                   </td>
                 </tr>
               );
@@ -811,7 +862,6 @@ const InventoryPage = () => { const { products } = useApp(); return (
     </div>
   </div>
 );};
-
 // Analytics Page
 const AnalyticsPage = () => {
   const { products, customers } = useApp();
@@ -842,7 +892,7 @@ const AnalyticsPage = () => {
         <div className="bg-white rounded-xl border p-5">
           <h3 className="font-semibold mb-4">トップ商品</h3>
           <div className="space-y-3">
-            {[...PRODUCTS].sort((a, b) => b.price * b.stock - a.price * a.stock).slice(0, 5).map((p, i) => (
+            {[...products].sort((a, b) => b.price * b.stock - a.price * a.stock).slice(0, 5).map((p, i) => (
               <div key={p.id} className="flex items-center gap-3 py-2 border-b last:border-0">
                 <span className="text-lg font-bold text-gray-300 w-6">{i + 1}</span>
                 <CategoryIcon category={p.category} size={24} />
