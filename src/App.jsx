@@ -104,6 +104,7 @@ const LandingPage = () => {
   const { navigate, addToCart, cart, products } = useApp();
   const [selectedCat, setSelectedCat] = useState("すべて");
   const [searchQ, setSearchQ] = useState("");
+  const [mobileMenu, setMobileMenu] = useState(false);
   const cartCount = cart.reduce((s, c) => s + c.quantity, 0);
   const filtered = products.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (!searchQ || p.name.includes(searchQ) || p.sku.includes(searchQ)));
   const featured = products.filter(p => p.stock > 50).slice(0, 4);
@@ -125,10 +126,13 @@ const LandingPage = () => {
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-3 gap-4">
-          <button onClick={() => navigate("landing")} className="flex items-center gap-2 shrink-0">
-            <img src="/logo.png" alt="シンガタ" className="h-9 w-auto"/>
-          </button>
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-3 gap-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => setMobileMenu(!mobileMenu)} className="md:hidden p-1.5 hover:bg-gray-100 rounded-lg"><Icons.menu size={22} /></button>
+            <button onClick={() => navigate("landing")} className="flex items-center gap-2 shrink-0">
+              <img src="/logo.png" alt="シンガタ" className="h-8 sm:h-9 w-auto"/>
+            </button>
+          </div>
           <div className="flex-1 max-w-lg relative hidden sm:block">
             <Icons.search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="商品名・型番・SKUで検索..." className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50/50" />
@@ -142,6 +146,30 @@ const LandingPage = () => {
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenu && (
+          <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
+            <div className="relative mb-2">
+              <Icons.search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+              <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="商品名・型番で検索..." className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50/50 focus:outline-none"/>
+            </div>
+            {[
+              {l:"商品一覧", p:"ec", Ic: Icons.package},
+              {l:"マイページ", p:"buyer", Ic: Icons.orders},
+              {l:"注文履歴", p:"buyer/orders", Ic: Icons.orders},
+              {l:"AIに相談", p:"buyer/chat", Ic: Icons.brain},
+              {l:"カート", p:"cart", Ic: Icons.cart},
+              {l:"アカウント", p:"buyer/account", Ic: Icons.users},
+              {l:"管理者ログイン", p:"operator", Ic: Icons.settings},
+            ].map(m => (
+              <button key={m.p} onClick={() => {navigate(m.p); setMobileMenu(false);}} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition">
+                <m.Ic size={16} className="text-gray-400"/> {m.l}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Category Bar */}
         <div className="max-w-7xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map(c => (
@@ -382,18 +410,30 @@ const ECStore = () => {
 
 const ECHeader = ({ cartCount }) => {
   const { navigate } = useApp();
+  const [mobileMenu, setMobileMenu] = useState(false);
   return (
     <header className="bg-white border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <button onClick={() => navigate("landing")} className="text-xl font-black text-gray-900 flex items-center gap-2"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("operator")} className="text-sm text-gray-500 hover:text-gray-700">管理画面</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setMobileMenu(!mobileMenu)} className="md:hidden p-1.5 hover:bg-gray-100 rounded-lg"><Icons.menu size={22}/></button>
+          <button onClick={() => navigate("landing")} className="flex items-center gap-2"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate("landing")} className="hidden sm:block text-sm text-gray-500 hover:text-gray-700">トップ</button>
+          <button onClick={() => navigate("buyer")} className="hidden sm:block text-sm text-gray-500 hover:text-gray-700">マイページ</button>
           <button onClick={() => navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg transition">
             <Icons.cart size={20} />
             {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">{cartCount}</span>}
           </button>
         </div>
       </div>
+      {mobileMenu && (
+        <div className="md:hidden border-t bg-white px-4 py-2 space-y-1">
+          {[{l:"トップ",p:"landing"},{l:"商品一覧",p:"ec"},{l:"マイページ",p:"buyer"},{l:"カート",p:"cart"},{l:"注文履歴",p:"buyer/orders"},{l:"お問い合わせ",p:"buyer/chat"},{l:"管理画面",p:"operator"}].map(m=>(
+            <button key={m.p} onClick={()=>{navigate(m.p);setMobileMenu(false);}} className="w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">{m.l}</button>
+          ))}
+        </div>
+      )}
     </header>
   );
 };
