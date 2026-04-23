@@ -496,13 +496,13 @@ const OperatorLayout = ({ children }) => {
         </nav>
         {(!collapsed || mobile) && (
           <div className="p-3 border-t border-white/10 space-y-1">
-            <button onClick={() => navigate("buyer")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
+            <button onClick={() => {setMobileOpen(false); navigate("buyer");}} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
               <Icons.cart size={16}/> 購入者画面
             </button>
-            <button onClick={() => navigate("ec")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
+            <button onClick={() => {setMobileOpen(false); navigate("ec");}} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
               <Icons.store size={16}/> ECストアを開く
             </button>
-            <button onClick={() => navigate("landing")} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
+            <button onClick={() => {setMobileOpen(false); navigate("landing");}} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition">
               <Icons.home size={16}/> トップに戻る
             </button>
           </div>
@@ -1347,32 +1347,33 @@ const PricingPage = () => { const { customers } = useApp(); return (
   <div className="space-y-4">
     <h2 className="font-semibold text-sm">価格・掛率管理</h2>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (クラフト手提げ袋)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(18*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
+    <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(18*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>{const r=prompt("新しい掛率(%)を入力してください","85"); if(r) alert("掛率を"+r+"%に変更しました");}} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
   </div>
 );};
 
 // AI Analytics Page
-const AIAnalyticsPage = () => (
+const AIAnalyticsPage = () => { const { setAiChatOpen } = useApp(); return (
   <div className="space-y-4">
-    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI分析センター</h2><p className="text-xs text-gray-500">AIによる売上予測・在庫最適化・価格戦略分析</p></div><button onClick={()=>alert("AI分析を実行中...")} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">AI分析を実行</button></div>
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI分析センター</h2><p className="text-xs text-gray-500">AIによる売上予測・在庫最適化・価格戦略分析</p></div><button onClick={()=>setAiChatOpen(true)} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">AI分析を実行</button></div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {[{l:"売れ筋分析",d:"過去データから売れ筋商品を予測し、在庫戦略を提案します。",c:"#2563EB"},{l:"在庫最適化",d:"需要予測に基づき、適正在庫量と発注タイミングを提案します。",c:"#16A34A"},{l:"価格戦略",d:"市場分析と競合比較から最適な価格設定を提案します。",c:"#F97316"},{l:"利益率改善",d:"コスト分析と販売データから利益率改善策を提案します。",c:"#7C3AED"}].map((card,i)=><div key={i} className="bg-white rounded-xl border p-4 hover:shadow-md transition cursor-pointer"><h3 className="font-semibold text-sm mb-1" style={{color:card.c}}>{card.l}</h3><p className="text-xs text-gray-500 mb-3">{card.d}</p><button onClick={()=>alert(card.l + "の分析結果を表示します")} className="text-xs font-medium" style={{color:card.c}}>分析を見る →</button></div>)}
+      {[{l:"売れ筋分析",d:"過去データから売れ筋商品を予測し、在庫戦略を提案します。",c:"#2563EB"},{l:"在庫最適化",d:"需要予測に基づき、適正在庫量と発注タイミングを提案します。",c:"#16A34A"},{l:"価格戦略",d:"市場分析と競合比較から最適な価格設定を提案します。",c:"#F97316"},{l:"利益率改善",d:"コスト分析と販売データから利益率改善策を提案します。",c:"#7C3AED"}].map((card,i)=><div key={i} className="bg-white rounded-xl border p-4 hover:shadow-md transition cursor-pointer"><h3 className="font-semibold text-sm mb-1" style={{color:card.c}}>{card.l}</h3><p className="text-xs text-gray-500 mb-3">{card.d}</p><button onClick={()=>setAiChatOpen(true)} className="text-xs font-medium" style={{color:card.c}}>分析を見る →</button></div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">AIレコメンデーション</h3>
-      {[{t:"クラフト手提げ袋 小の追加発注を推奨",d:"現在在庫が減少中。季節需要の増加が予測されます。2000枚の追加発注を推奨。",tag:"欠品防止",c:"#DC2626"},{t:"ラミネート袋シリーズのセット販促を提案",d:"マット&グロスのセット割引で単価アップと在庫回転率の改善が見込めます。",tag:"在庫最適化",c:"#F59E0B"},{t:"エコバッグ型紙袋の価格見直し",d:"環境意識の高まりで需要増。3%の価格調整で売上20%増加が見込めます。",tag:"売上増加",c:"#16A34A"}].map((r,i)=><div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 border-l-4" style={{borderLeftColor:r.c}}><div className="flex items-center gap-2 mb-1"><span className="text-sm font-bold">{r.t}</span><span className="text-xs px-1.5 py-0.5 rounded" style={{backgroundColor:r.c+"15",color:r.c}}>{r.tag}</span></div><p className="text-xs text-gray-500 mb-2">{r.d}</p><button onClick={()=>alert(r.t + "\nを実行します")} className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium">実行</button></div>)}
+      {[{t:"クラフト手提げ袋 小の追加発注を推奨",d:"現在在庫が減少中。季節需要の増加が予測されます。2000枚の追加発注を推奨。",tag:"欠品防止",c:"#DC2626"},{t:"ラミネート袋シリーズのセット販促を提案",d:"マット&グロスのセット割引で単価アップと在庫回転率の改善が見込めます。",tag:"在庫最適化",c:"#F59E0B"},{t:"エコバッグ型紙袋の価格見直し",d:"環境意識の高まりで需要増。3%の価格調整で売上20%増加が見込めます。",tag:"売上増加",c:"#16A34A"}].map((r,i)=><div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 border-l-4" style={{borderLeftColor:r.c}}><div className="flex items-center gap-2 mb-1"><span className="text-sm font-bold">{r.t}</span><span className="text-xs px-1.5 py-0.5 rounded" style={{backgroundColor:r.c+"15",color:r.c}}>{r.tag}</span></div><p className="text-xs text-gray-500 mb-2">{r.d}</p><button onClick={()=>setAiChatOpen(true)} className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium">実行</button></div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">ビジネススコア</h3>
       <div className="text-center mb-4"><span className="text-4xl font-black text-blue-600">87</span><span className="text-sm text-gray-500 ml-1">/ 100</span></div>
       <div className="grid grid-cols-4 gap-3">{[{l:"在庫効率",v:82},{l:"価格競争力",v:91},{l:"顧客満足度",v:88},{l:"利益率",v:79}].map((s,i)=><div key={i} className="text-center"><div className="text-lg font-bold">{s.v}</div><div className="text-xs text-gray-500">{s.l}</div><div className="w-full bg-gray-100 rounded-full h-1.5 mt-1"><div className="h-1.5 rounded-full bg-blue-600" style={{width:`${s.v}%`}}/></div></div>)}</div>
     </div>
   </div>
-);
+); };
 
 // AI Articles Page
 const AIArticlesPage = () => {
+  const { setAiChatOpen } = useApp();
   const arts = [{id:"a1",title:"紙袋の種類と選び方ガイド",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：エコ素材紙袋シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
   return (<div className="space-y-4">
-    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button onClick={()=>alert("AI記事生成フォームを表示します")} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button onClick={()=>setAiChatOpen(true)} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
     </div>
@@ -1409,7 +1410,7 @@ const MasterPage = () => {
   const data = {"商品カテゴリ":CATEGORIES.filter(c=>c!=="すべて").map((c,i)=>({code:`CAT-${String(i+1).padStart(3,"0")}`,name:c,status:"有効"})),"配送方法":["トラック便","宅配便","ヤマト運輸","佐川急便","日本郵便","西濃運輸","福山通運","店頭受取"].map((n,i)=>({code:`DLV-${String(i+1).padStart(3,"0")}`,name:n,status:"有効"})),"決済方法":["銀行振込","クレジットカード","現金","コンビニ決済"].map((n,i)=>({code:`PAY-${String(i+1).padStart(3,"0")}`,name:n,status:"有効"}))};
   const items = data[tab]||[];
   return (<div className="space-y-4">
-    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">マスタ管理</h2><p className="text-xs text-gray-500">商品カテゴリ、配送方法、決済方法などのマスタデータ管理</p></div><button onClick={()=>alert("新規マスタ登録フォームを表示します")} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規登録</button></div>
+    <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">マスタ管理</h2><p className="text-xs text-gray-500">商品カテゴリ、配送方法、決済方法などのマスタデータ管理</p></div><button onClick={()=>{const m=prompt("マスタ名を入力してください"); if(m) alert("マスタ '"+m+"' を登録しました");}} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium">新規登録</button></div>
     <div className="flex gap-2">{["商品カテゴリ","配送方法","決済方法"].map(t=><button key={t} onClick={()=>setTab(t)} className={`px-3 py-1.5 rounded-lg text-sm transition ${tab===t?"bg-blue-600 text-white":"bg-white border text-gray-600"}`}>{t}</button>)}</div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["コード","名称","ステータス"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
     <tbody>{items.map((m,i)=><tr key={i} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-mono text-gray-400">{m.code}</td><td className="px-4 py-2.5 text-sm font-medium">{m.name}</td><td className="px-4 py-2.5"><span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">{m.status}</span></td></tr>)}</tbody></table></div>
@@ -1419,16 +1420,28 @@ const MasterPage = () => {
 // ━━ BUYER PAGES ━━
 const BuyerLayout = ({children}) => {
   const { page, navigate, cart } = useApp();
+  const [mobileMenu, setMobileMenu] = useState(false);
   const cartCount = cart.reduce((s,c) => s + c.quantity, 0);
   const menu = [{id:"buyer",l:"トップ"},{id:"buyer/products",l:"商品一覧"},{id:"buyer/orders",l:"注文履歴"},{id:"buyer/billing",l:"請求・決済"},{id:"buyer/chat",l:"チャット相談"},{id:"buyer/account",l:"アカウント"}];
   return (<div className="min-h-screen bg-gray-50">
-    <header className="bg-white border-b px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-      <button onClick={()=>navigate("landing")} className="text-lg font-black text-gray-900"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
-      <nav className="hidden md:flex items-center gap-1">{menu.map(m=><button key={m.id} onClick={()=>navigate(m.id)} className={`px-3 py-1.5 rounded-lg text-xs transition ${page===m.id?"bg-blue-50 text-blue-600 font-medium":"text-gray-500 hover:bg-gray-50"}`}>{m.l}</button>)}</nav>
-      <div className="flex items-center gap-2">
-        <button onClick={()=>navigate("operator")} className="text-xs text-gray-500">運営者画面</button>
-        <button onClick={()=>navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg"><Icons.cart size={18}/>{cartCount>0&&<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-bold">{cartCount}</span>}</button>
+    <header className="bg-white border-b px-4 py-3 sticky top-0 z-50">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={()=>setMobileMenu(!mobileMenu)} className="md:hidden p-1"><Icons.menu size={20}/></button>
+          <button onClick={()=>navigate("landing")} className="text-lg font-black text-gray-900"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></button>
+        </div>
+        <nav className="hidden md:flex items-center gap-1">{menu.map(m=><button key={m.id} onClick={()=>navigate(m.id)} className={`px-3 py-1.5 rounded-lg text-xs transition ${page===m.id?"bg-blue-50 text-blue-600 font-medium":"text-gray-500 hover:bg-gray-50"}`}>{m.l}</button>)}</nav>
+        <div className="flex items-center gap-2">
+          <button onClick={()=>navigate("operator")} className="text-xs text-gray-500 hidden sm:block">管理画面</button>
+          <button onClick={()=>navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded-lg"><Icons.cart size={18}/>{cartCount>0&&<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-bold">{cartCount}</span>}</button>
+        </div>
       </div>
+      {mobileMenu && (
+        <nav className="md:hidden flex flex-col gap-1 pt-2 border-t mt-2">
+          {menu.map(m=><button key={m.id} onClick={()=>{navigate(m.id);setMobileMenu(false);}} className={`px-3 py-2.5 rounded-lg text-sm text-left transition ${page===m.id?"bg-blue-50 text-blue-600 font-medium":"text-gray-600"}`}>{m.l}</button>)}
+          <button onClick={()=>{navigate("operator");setMobileMenu(false);}} className="px-3 py-2.5 rounded-lg text-sm text-left text-gray-400">管理画面</button>
+        </nav>
+      )}
     </header>
     <main className="max-w-7xl mx-auto px-4 py-4">{children}</main>
   </div>);
@@ -1437,7 +1450,7 @@ const BuyerLayout = ({children}) => {
 const BuyerTopPage = () => {
   const {navigate, products} = useApp();
   return (<div className="space-y-6">
-    <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">紙袋・包装資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
+    <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">紙袋・包装資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。掛売対応。小ロットから大量注文まで承ります。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",Ic:Icons.truck},{l:"商品について",Ic:Icons.package},{l:"在庫・納期について",Ic:Icons.inventory},{l:"価格・見積について",Ic:Icons.dollar}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="mb-2"><c.Ic size={24}/></div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);

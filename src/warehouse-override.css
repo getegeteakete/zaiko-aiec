@@ -150,3 +150,19 @@
 
 /* Notification dot */
 [data-theme="dark"] .bg-red-500 { background: var(--wh-danger) !important; }
+
+/* ═══ Mobile Responsive ═══ */
+@media (max-width: 640px) {
+  [data-theme="dark"] table th,
+  [data-theme="dark"] table td { padding: 6px 8px !important; font-size: 12px !important; }
+  
+  [data-theme="dark"] .grid-cols-2 { grid-template-columns: 1fr !important; }
+  [data-theme="dark"] .sm\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  [data-theme="dark"] .lg\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  
+  [data-theme="dark"] input,
+  [data-theme="dark"] select,
+  [data-theme="dark"] textarea { min-height: 40px; font-size: 14px !important; }
+  
+  [data-theme="dark"] button { min-height: 36px; }
+}

@@ -151,3 +151,46 @@ body {
   --slate-50: #F8FAFC;
   --danger: #DC2626;
 }
+
+/* ═══ Responsive Improvements ═══ */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+
+/* Mobile-first table improvements */
+@media (max-width: 640px) {
+  table { font-size: 13px; }
+  table th, table td { padding: 8px 6px !important; }
+  .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+
+  /* Stack form grids */
+  .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr !important; }
+  .sm\:grid-cols-3, .sm\:grid-cols-4, .lg\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Full-width buttons on mobile */
+  .flex.gap-2 > button, .flex.gap-3 > button { font-size: 13px; padding: 8px 12px; }
+
+  /* Compact cards */
+  .rounded-xl.border.p-5, .rounded-xl.border.p-4 { padding: 12px !important; }
+
+  /* Better tap targets */
+  button, select, input { min-height: 40px; }
+  select { font-size: 14px !important; }
+
+  /* Admin header */
+  header.sticky { padding: 8px 12px !important; }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .xl\:grid-cols-5 { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+/* Better touch scrolling for sidebar */
+nav.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Admin sidebar mobile overlay */
+@media (max-width: 768px) {
+  [data-theme="dark"] main { padding: 12px !important; }
+}
