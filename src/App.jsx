@@ -816,7 +816,31 @@ const OrdersPage = () => {
           <button key={f.v} onClick={() => setFilter(f.v)} className={`px-3 py-1.5 rounded-lg text-sm transition ${filter === f.v ? "bg-blue-600 text-white" : "bg-white border text-gray-600"}`}>{f.l}</button>
         ))}
       </div>
-      <div className="bg-white rounded-xl border overflow-hidden">
+      {/* Mobile: Card Layout */}
+      <div className="md:hidden space-y-3">
+        {filtered.map(o => (
+          <div key={o.id} className="bg-white rounded-xl border p-3">
+            <div className="flex items-start justify-between mb-2">
+              <div className="min-w-0">
+                <p className="text-xs text-blue-600 font-medium">{o.orderNumber}</p>
+                <p className="text-sm font-bold truncate">{o.customerName}</p>
+              </div>
+              <p className="text-sm font-bold shrink-0 ml-2">¥{fmt(o.total)}</p>
+            </div>
+            <p className="text-xs text-gray-400 mb-2 truncate">{o.items?.[0]?.productName||"—"}{(o.items?.length||0)>1?` 他${(o.items?.length||0)-1}件`:""}</p>
+            <div className="flex items-center justify-between gap-2">
+              <select value={o.status} onChange={e => handleStatusChange(o.id, e.target.value)} className="text-xs border rounded-lg px-2 py-1.5 bg-transparent flex-1">
+                {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <Badge status={o.paymentStatus} />
+              <span className="text-[10px] text-gray-400 shrink-0">{o.orderDate}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: Table Layout */}
+      <div className="hidden md:block bg-white rounded-xl border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -902,7 +926,31 @@ const ProductsPage = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border overflow-hidden">
+      {/* Mobile: Card Layout */}
+      <div className="md:hidden space-y-2">
+        {products.map(p => (
+          <div key={p.id} className="bg-white rounded-xl border p-3 flex items-center gap-3">
+            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center shrink-0"><CategoryIcon category={p.category} size={22}/></div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-bold truncate">{p.name}</p>
+                <Badge status={p.stock < 20 ? "危険" : p.stock < 50 ? "在庫少" : "正常"}/>
+              </div>
+              <div className="flex items-center gap-3 mt-0.5">
+                <span className="text-xs text-gray-400">{p.sku}</span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{p.category}</span>
+              </div>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-sm font-bold" style={{color:'var(--steel-500)'}}>¥{fmt(p.price)}/{p.unit}</span>
+                <span className={`text-xs font-medium ${p.stock<50?"text-yellow-600":"text-green-600"}`}>在庫 {p.stock}{p.unit}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: Table Layout */}
+      <div className="hidden md:block bg-white rounded-xl border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -937,7 +985,7 @@ const ProductsPage = () => {
 
 // Customers Page
 const CustomersPage = () => {
-  const { customers, refetchCustomers } = useApp();
+  const { customers, refetchCustomers, navigate } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ company_name: "", contact_name: "", email: "", phone: "", address: "", tier: "スタンダード", payment_terms: "月末締め翌月末払い" });
 
@@ -985,21 +1033,52 @@ const CustomersPage = () => {
         </div>
       </div>
     )}
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div className="bg-white rounded-xl border p-5">
-        <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総顧客数</p>
-        <p className="text-2xl font-bold">{customers.length}</p>
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
+      <div className="bg-white rounded-xl border p-3 sm:p-5">
+        <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">総顧客数</p>
+        <p className="text-xl sm:text-2xl font-bold">{customers.length}</p>
       </div>
-      <div className="bg-white rounded-xl border p-5">
-        <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">平均LTV</p>
-        <p className="text-2xl font-bold">¥{fmt(Math.floor(customers.reduce((s, c) => s + c.totalSpent, 0) / customers.length))}</p>
+      <div className="bg-white rounded-xl border p-3 sm:p-5">
+        <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">平均LTV</p>
+        <p className="text-xl sm:text-2xl font-bold">¥{fmt(Math.floor(customers.reduce((s, c) => s + c.totalSpent, 0) / customers.length))}</p>
       </div>
-      <div className="bg-white rounded-xl border p-5">
-        <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">総受注額</p>
-        <p className="text-2xl font-bold">¥{fmt(customers.reduce((s, c) => s + c.totalSpent, 0))}</p>
+      <div className="bg-white rounded-xl border p-3 sm:p-5 col-span-2 sm:col-span-1">
+        <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">総受注額</p>
+        <p className="text-xl sm:text-2xl font-bold">¥{fmt(customers.reduce((s, c) => s + c.totalSpent, 0))}</p>
       </div>
     </div>
-    <div className="bg-white rounded-xl border overflow-hidden">
+
+    {/* Mobile: Card Layout */}
+    <div className="md:hidden space-y-3">
+      {customers.map(c => (
+        <div key={c.id} className="bg-white rounded-xl border p-4">
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h3 className="text-sm font-bold">{c.companyName}</h3>
+              <p className="text-xs text-gray-400">{c.contactName}</p>
+            </div>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${tierColors[c.tier]}`}>{c.tier}</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <div className="bg-gray-50 rounded-lg p-2">
+              <p className="text-[10px] text-gray-400">注文数</p>
+              <p className="text-sm font-bold">{c.totalOrders}件</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2">
+              <p className="text-[10px] text-gray-400">合計金額</p>
+              <p className="text-sm font-bold">¥{fmt(c.totalSpent)}</p>
+            </div>
+          </div>
+          <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between">
+            <p className="text-xs text-gray-400 truncate">{c.email}</p>
+            <button onClick={()=>navigate("operator/billing")} className="text-[10px] text-blue-600 font-medium shrink-0 ml-2">請求設定 →</button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Desktop: Table Layout */}
+    <div className="hidden md:block bg-white rounded-xl border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
