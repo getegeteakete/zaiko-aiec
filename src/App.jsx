@@ -107,67 +107,71 @@ const LandingPage = () => {
   const cartCount = cart.reduce((s, c) => s + c.quantity, 0);
   const filtered = products.filter(p => (selectedCat === "すべて" || p.category === selectedCat) && (!searchQ || p.name.includes(searchQ) || p.sku.includes(searchQ)));
   const featured = products.filter(p => p.stock > 50).slice(0, 4);
+  const popularCats = [...new Set(products.map(p => p.category))].slice(0, 6);
 
   return (
-    <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
-      {/* ── Top Bar ── */}
-      <div className="bg-industrial text-white/70 text-xs py-1.5 px-4 flex items-center justify-between">
-        <span>シンガタ株式会社 ｜ 法人向け紙袋・包装資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
-          <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ログイン</button>
+    <div className="min-h-screen" style={{background:'#F8FAFC'}}>
+      {/* ── Top Announcement Bar ── */}
+      <div className="bg-industrial text-white/60 text-[11px] py-2 px-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <span className="hidden sm:inline">シンガタ株式会社 ｜ 法人向け紙袋・包装資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
+          <span className="sm:hidden text-[10px]">法人向け紙袋卸売 ｜ 翌日配送 ｜ 掛売対応</span>
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
+            <button onClick={() => navigate("operator")} className="hover:text-white transition hidden sm:block">管理者ログイン</button>
+          </div>
         </div>
       </div>
 
       {/* ── Header ── */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="container flex items-center justify-between py-3 gap-4">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-3 gap-4">
           <button onClick={() => navigate("landing")} className="flex items-center gap-2 shrink-0">
-            <img src="/logo.png" alt="シンガタ" className="h-8 w-auto"/>
-            
-            
+            <img src="/logo.png" alt="シンガタ" className="h-9 w-auto"/>
           </button>
-          <div className="flex-1 max-w-xl relative hidden sm:block">
-            <Icons.search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="商品名・型番・SKUで検索..." className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400" style={{borderRadius:'var(--radius)'}} />
+          <div className="flex-1 max-w-lg relative hidden sm:block">
+            <Icons.search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="商品名・型番・SKUで検索..." className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-gray-50/50" />
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate("buyer/chat")} className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded transition" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><Icons.brain size={14} /> AIに相談</button>
-            <button onClick={() => navigate("buyer")} className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded transition hover:bg-gray-100" style={{color:'var(--slate-600)'}}><Icons.orders size={14} /> 注文履歴</button>
-            <button onClick={() => navigate("cart")} className="relative p-2 hover:bg-gray-100 rounded transition">
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => navigate("buyer/chat")} className="hidden md:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg transition" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><Icons.brain size={14} /> AIに相談</button>
+            <button onClick={() => navigate("buyer")} className="hidden md:flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg transition hover:bg-gray-100 text-gray-600"><Icons.orders size={14} /> 注文履歴</button>
+            <button onClick={() => navigate("cart")} className="relative p-2.5 hover:bg-gray-100 rounded-lg transition">
               <Icons.cart size={20} />
-              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold" style={{background:'var(--amber-500)'}}>{cartCount}</span>}
+              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold" style={{background:'var(--steel-500)'}}>{cartCount}</span>}
             </button>
           </div>
         </div>
         {/* Category Bar */}
-        <div className="container pb-2 flex gap-1 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map(c => (
-            <button key={c} onClick={() => setSelectedCat(c)} className={`px-3 py-1 rounded text-xs font-medium whitespace-nowrap transition ${selectedCat === c ? "text-white" : "text-gray-600 hover:bg-gray-100"}`} style={selectedCat === c ? {background:'var(--steel-500)'} : {}}>{c}</button>
+            <button key={c} onClick={() => setSelectedCat(c)} className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${selectedCat === c ? "text-white shadow-sm" : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"}`} style={selectedCat === c ? {background:'var(--steel-500)'} : {}}>{c}</button>
           ))}
         </div>
       </header>
 
       {/* ── Hero Banner ── */}
-      <section className="hero-banner py-10 sm:py-14 px-4 relative">
-        <div className="container relative z-10 flex flex-col sm:flex-row items-center gap-8">
-          <div className="flex-1">
-            <div className="inline-block mb-3 px-3 py-1 rounded text-xs font-semibold" style={{background:'rgba(212,147,10,.15)',color:'var(--amber-400)'}}>法人専用 ｜ 掛売対応 ｜ 最短翌日配送</div>
-            <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
+      <section className="hero-banner py-16 sm:py-20 lg:py-24 px-4 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur border border-white/20 text-white/90">
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"/>法人専用 ｜ 掛売対応 ｜ 最短翌日配送
+            </div>
+            <h1 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-white leading-[1.15] mb-5 tracking-tight">
               紙袋・包装資材の<br/><span className="text-gradient">卸売専門サイト</span>
             </h1>
-            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">手提げ袋・ラミネート袋・ギフト袋・宅配袋など、200種類以上の紙袋を取り揃え。小ロットから大量注文まで対応いたします。</p>
-            <div className="flex gap-3">
-              <button onClick={() => document.getElementById('products')?.scrollIntoView({behavior:'smooth'})} className="btn-primary px-6 py-3 text-sm font-bold" style={{background:'var(--amber-500)'}}>商品を見る ↓</button>
-              <button onClick={() => navigate("buyer")} className="px-6 py-3 border border-white/20 text-white/80 rounded text-sm font-medium hover:bg-white/10 transition" style={{borderRadius:'var(--radius)'}}>マイページ</button>
+            <p className="text-white/60 text-sm sm:text-base mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">手提げ袋・ラミネート袋・ギフト袋・宅配袋など、200種類以上の紙袋を取り揃え。小ロットから大量注文まで対応いたします。</p>
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              <button onClick={() => document.getElementById('products')?.scrollIntoView({behavior:'smooth'})} className="px-7 py-3.5 text-sm font-bold rounded-lg text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" style={{background:'var(--steel-500)'}}>商品を見る ↓</button>
+              <button onClick={() => navigate("buyer")} className="px-7 py-3.5 border border-white/25 text-white/90 rounded-lg text-sm font-medium hover:bg-white/10 transition backdrop-blur">マイページ</button>
             </div>
           </div>
-          <div className="hidden lg:grid grid-cols-2 gap-3 w-80">
+          <div className="hidden lg:grid grid-cols-2 gap-4 w-96">
             {featured.map((p, i) => (
-              <div key={p.id} className="bg-white/5 backdrop-blur border border-white/10 rounded p-3 animate-fade-up" style={{animationDelay:`${i*0.1}s`, borderRadius:'var(--radius)'}}>
-                <div className="flex justify-center mb-1"><CategoryIcon category={p.category} size={32} /></div>
-                <p className="text-xs text-white/70 truncate">{p.name}</p>
-                <p className="text-xs font-bold text-amber-400">¥{fmt(p.price)}</p>
+              <div key={p.id} className="bg-white/8 backdrop-blur-sm border border-white/15 rounded-xl p-4 animate-fade-up hover:bg-white/12 transition cursor-pointer" style={{animationDelay:`${i*0.1}s`}} onClick={() => navigate("ec")}>
+                <div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div>
+                <p className="text-xs text-white/70 truncate text-center">{p.name}</p>
+                <p className="text-sm font-bold text-center mt-1" style={{color:'var(--steel-300)'}}>¥{fmt(p.price)}<span className="text-[10px] text-white/40 ml-0.5">/{p.unit}</span></p>
               </div>
             ))}
           </div>
@@ -175,71 +179,119 @@ const LandingPage = () => {
       </section>
 
       {/* ── KPI Strip ── */}
-      <div className="container -mt-5 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      <div className="max-w-7xl mx-auto px-4 -mt-7 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-12">
         {[{v:"200+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"掛売",l:"法人後払い対応",Ic:Icons.orders}].map((k,i) => (
-          <div key={i} className="card p-4 flex items-center gap-3 animate-fade-up" style={{animationDelay:`${i*0.08}s`}}>
-            <k.Ic size={24}/>
-            <div><p className="font-display font-extrabold text-lg" style={{color:'var(--navy-900)'}}>{k.v}</p><p className="text-xs" style={{color:'var(--slate-400)'}}>{k.l}</p></div>
+          <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex items-center gap-3 shadow-sm animate-fade-up hover:shadow-md transition" style={{animationDelay:`${i*0.08}s`}}>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><k.Ic size={20}/></div>
+            <div><p className="font-extrabold text-lg text-gray-900">{k.v}</p><p className="text-[11px] text-gray-400">{k.l}</p></div>
           </div>
         ))}
       </div>
 
+      {/* ── Category Showcase ── */}
+      <section className="max-w-7xl mx-auto px-4 mb-14">
+        <div className="text-center mb-8">
+          <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-2">カテゴリから探す</h2>
+          <p className="text-sm text-gray-400">用途に合わせた紙袋をお選びいただけます</p>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+          {popularCats.map((cat, i) => (
+            <button key={cat} onClick={() => {setSelectedCat(cat); document.getElementById('products')?.scrollIntoView({behavior:'smooth'});}} className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 flex flex-col items-center gap-2 hover:shadow-lg hover:-translate-y-1 transition-all group animate-fade-up" style={{animationDelay:`${i*0.05}s`}}>
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors" style={{background:'var(--steel-50)'}}><CategoryIcon category={cat} size={28} /></div>
+              <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900">{cat}</span>
+              <span className="text-[10px] text-gray-300">{products.filter(p=>p.category===cat).length}点</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* ── Products Section ── */}
-      <section id="products" className="container pb-12">
-        <div className="flex items-center justify-between mb-4">
+      <section id="products" className="max-w-7xl mx-auto px-4 pb-16">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-display font-bold text-lg" style={{color:'var(--navy-900)'}}>商品一覧</h2>
-            <p className="text-xs" style={{color:'var(--slate-400)'}}>{filtered.length}件の商品</p>
+            <h2 className="font-bold text-xl sm:text-2xl text-gray-900 mb-1">商品一覧</h2>
+            <p className="text-sm text-gray-400">{filtered.length}件の商品{selectedCat !== "すべて" ? ` (${selectedCat})` : ""}</p>
           </div>
           <div className="relative sm:hidden">
             <Icons.search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"/>
-            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="検索..." className="pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs w-40 focus:outline-none"/>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="検索..." className="pl-8 pr-3 py-2 border border-gray-200 rounded-lg text-xs w-36 focus:outline-none focus:ring-2 focus:ring-blue-500/20"/>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {filtered.map((p, i) => (
-            <div key={p.id} className="product-card cursor-pointer animate-fade-up" style={{animationDelay:`${i*0.04}s`}} onClick={() => navigate("ec")}>
-              <div className="bg-gray-50 flex items-center justify-center text-4xl sm:text-5xl py-6 relative">
-                <CategoryIcon category={p.category} size={24} />
-                {p.stock < 30 && <span className="absolute top-2 right-2 text-xs px-1.5 py-0.5 rounded font-semibold" style={{background:'var(--danger)',color:'#fff',fontSize:'10px'}}>残少</span>}
+            <div key={p.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden cursor-pointer animate-fade-up hover:shadow-lg hover:-translate-y-0.5 transition-all group" style={{animationDelay:`${i*0.03}s`}} onClick={() => navigate("ec")}>
+              <div className="bg-gradient-to-b from-gray-50 to-white flex items-center justify-center py-8 relative">
+                <CategoryIcon category={p.category} size={32} />
+                {p.stock < 30 && <span className="absolute top-2.5 right-2.5 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-red-500 text-white">残少</span>}
               </div>
-              <div className="p-3">
-                <p className="text-xs mb-0.5" style={{color:'var(--slate-400)'}}>{p.category} ｜ {p.sku}</p>
-                <h3 className="text-sm font-semibold mb-1 line-clamp-2" style={{color:'var(--navy-900)'}}>{p.name}</h3>
-                <p className="text-xs mb-2 line-clamp-2" style={{color:'var(--slate-400)'}}>{p.description}</p>
+              <div className="p-3.5 sm:p-4">
+                <p className="text-[10px] text-gray-400 mb-1">{p.category} ｜ {p.sku}</p>
+                <h3 className="text-sm font-semibold text-gray-900 mb-1.5 line-clamp-2 group-hover:text-blue-600 transition-colors">{p.name}</h3>
+                <p className="text-xs text-gray-400 mb-3 line-clamp-2 leading-relaxed">{p.description}</p>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-display font-bold text-base" style={{color:'var(--steel-500)'}}>¥{fmt(p.price)}</span>
-                    <span className="text-xs ml-0.5" style={{color:'var(--slate-400)'}}>/{p.unit}</span>
+                    <span className="font-bold text-lg" style={{color:'var(--steel-500)'}}>¥{fmt(p.price)}</span>
+                    <span className="text-[10px] text-gray-400 ml-0.5">/{p.unit}</span>
                   </div>
-                  <button onClick={e => {e.stopPropagation(); addToCart(p);}} className="p-1.5 rounded transition hover:shadow" style={{background:'var(--steel-50)',color:'var(--steel-500)'}}><Icons.cart size={14}/></button>
+                  <button onClick={e => {e.stopPropagation(); addToCart(p);}} className="w-8 h-8 rounded-lg flex items-center justify-center transition hover:shadow-md" style={{background:'var(--steel-500)',color:'#fff'}}><Icons.cart size={14}/></button>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">該当する商品がありません</div>}
+        {filtered.length === 0 && <div className="text-center py-20 text-gray-400 text-sm">該当する商品がありません</div>}
+      </section>
+
+      {/* ── Trust / CTA Banner ── */}
+      <section className="bg-gray-900 py-16 sm:py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="font-bold text-xl sm:text-2xl text-white mb-4">法人のお客様、まずはお気軽にお問い合わせください</h2>
+          <p className="text-white/50 text-sm mb-8 max-w-lg mx-auto">掛売のお申し込み、大量注文のお見積り、オリジナル印刷のご相談など、お気軽にご連絡ください。</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <button onClick={() => navigate("buyer/chat")} className="px-8 py-3.5 text-sm font-bold rounded-lg text-white shadow-lg hover:shadow-xl transition-all" style={{background:'var(--steel-500)'}}>お問い合わせ</button>
+            <button onClick={() => navigate("buyer")} className="px-8 py-3.5 border border-white/20 text-white/80 rounded-lg text-sm font-medium hover:bg-white/5 transition">会員登録（無料）</button>
+          </div>
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mt-10">
+            {[{v:"5,000+",l:"法人取引実績"},{v:"98%",l:"リピート率"},{v:"47",l:"都道府県対応"},{v:"1〜3日",l:"平均納品日数"}].map((s,i) => (
+              <div key={i} className="text-center">
+                <p className="font-extrabold text-2xl text-white">{s.v}</p>
+                <p className="text-[11px] text-white/40 mt-1">{s.l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="bg-industrial text-white/40 py-8 px-4 relative">
-        <div className="container relative z-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-2"><img src="/logo.png" alt="シンガタ" className="h-6 w-auto opacity-60"/></div>
-            <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <button onClick={() => navigate("buyer")} className="hover:text-white transition">マイページ</button>
-              <button onClick={() => navigate("ec")} className="hover:text-white transition">商品一覧</button>
-              <button onClick={() => navigate("buyer/chat")} className="hover:text-white transition">お問い合わせ</button>
+      <footer className="bg-gray-950 text-white/40 py-12 sm:py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mb-10">
+            <div>
+              <img src="/logo.png" alt="シンガタ" className="h-7 w-auto opacity-50 mb-4"/>
+              <p className="text-xs leading-relaxed text-white/30">紙袋・包装資材の法人向け卸売ECサイト。小ロットから大量注文まで、お客様のビジネスをサポートします。</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">サービス</h4>
+              <div className="space-y-2">
+                <button onClick={() => navigate("ec")} className="block text-xs hover:text-white transition">商品一覧</button>
+                <button onClick={() => navigate("buyer")} className="block text-xs hover:text-white transition">マイページ</button>
+                <button onClick={() => navigate("buyer/chat")} className="block text-xs hover:text-white transition">お問い合わせ</button>
+                <button onClick={() => navigate("buyer/orders")} className="block text-xs hover:text-white transition">注文履歴</button>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">企業情報</h4>
+              <div className="space-y-2">
+                <button onClick={() => navigate("privacy")} className="block text-xs hover:text-white transition">プライバシーポリシー</button>
+                <button onClick={() => navigate("tokushoho")} className="block text-xs hover:text-white transition">特定商取引法に基づく表記</button>
+                <button onClick={() => navigate("privacy")} className="block text-xs hover:text-white transition">個人情報保護方針</button>
+              </div>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <button onClick={() => navigate("privacy")} className="hover:text-white transition">プライバシーポリシー</button>
-              <button onClick={() => navigate("tokushoho")} className="hover:text-white transition">特定商取引法に基づく表記</button>
-              <button onClick={() => navigate("privacy")} className="hover:text-white transition">個人情報保護方針</button>
-            </div>
-            <p className="text-xs">© 2024 シンガタ株式会社</p>
+          <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[11px]">© 2024 シンガタ株式会社 All rights reserved.</p>
+            <p className="text-[11px] text-white/20">Powered by エーライフ</p>
           </div>
         </div>
       </footer>
