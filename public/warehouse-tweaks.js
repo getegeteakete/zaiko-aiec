@@ -96,3 +96,21 @@
   panel.querySelector('.hdr .x').onclick = () => { state.open = false; render(); };
   apply();
 })();
+
+// ── Scroll to Top Button ──
+(function(){
+  const btn = document.createElement('button');
+  btn.id = 'scroll-top';
+  btn.innerHTML = '↑';
+  btn.setAttribute('aria-label','ページ上部へ');
+  const s = btn.style;
+  s.cssText = 'position:fixed;bottom:76px;right:24px;z-index:9998;width:40px;height:40px;border-radius:50%;background:#fff;color:#64748B;border:1px solid #E2E8F0;cursor:pointer;font-size:16px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.1);transition:all .2s;';
+  btn.onmouseenter = () => { btn.style.background='#F1F5F9'; btn.style.transform='scale(1.1)'; };
+  btn.onmouseleave = () => { btn.style.background='#fff'; btn.style.transform='scale(1)'; };
+  btn.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
+  document.body.appendChild(btn);
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if(!ticking){requestAnimationFrame(()=>{btn.style.display=window.scrollY>300?'flex':'none';ticking=false;});ticking=true;}
+  });
+})();
