@@ -1136,34 +1136,66 @@ const InventoryPage = () => {
         { label: "低在庫", value: products.filter(p => p.stock < 50 && p.stock > 0).length, color: "text-yellow-600" },
         { label: "欠品", value: products.filter(p => p.stock <= 0).length, color: "text-red-600" },
       ].map((k, i) => (
-        <div key={i} className="bg-white rounded-xl border p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{k.label}</p>
-          <p className={`text-2xl font-bold ${k.color}`}>{k.value}</p>
+        <div key={i} className="bg-white rounded-xl border p-3 sm:p-5">
+          <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mb-1">{k.label}</p>
+          <p className={`text-xl sm:text-2xl font-bold ${k.color}`}>{k.value}</p>
         </div>
       ))}
     </div>
 
     {adjusting && (() => { const p = products.find(x=>x.id===adjusting); return (
-      <div className="bg-white rounded-xl border p-5 space-y-3">
+      <div className="bg-white rounded-xl border p-4 space-y-3">
         <h3 className="font-semibold text-sm">在庫調整: {p?.name}</h3>
-        <div className="grid grid-cols-2 sm:flex sm:gap-3 gap-2 items-end">
+        <div className="grid grid-cols-2 gap-2">
           <div><label className="text-xs text-gray-500 block mb-1">種別</label>
-            <select value={adjType} onChange={e=>setAdjType(e.target.value)} className="border rounded-lg px-3 py-2 text-sm"><option>入庫</option><option>出庫</option><option>棚卸し</option></select>
+            <select value={adjType} onChange={e=>setAdjType(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm"><option>入庫</option><option>出庫</option><option>棚卸し</option></select>
           </div>
           <div><label className="text-xs text-gray-500 block mb-1">数量</label>
-            <input type="number" min="1" value={adjQty} onChange={e=>setAdjQty(parseInt(e.target.value)||0)} className="border rounded-lg px-3 py-2 text-sm w-24"/>
+            <input type="number" min="1" value={adjQty} onChange={e=>setAdjQty(parseInt(e.target.value)||0)} className="w-full border rounded-lg px-3 py-2 text-sm"/>
           </div>
-          <div className="flex-1"><label className="text-xs text-gray-500 block mb-1">備考</label>
-            <input value={adjNote} onChange={e=>setAdjNote(e.target.value)} placeholder="理由・メモ" className="border rounded-lg px-3 py-2 text-sm w-full"/>
+          <div className="col-span-2"><label className="text-xs text-gray-500 block mb-1">備考</label>
+            <input value={adjNote} onChange={e=>setAdjNote(e.target.value)} placeholder="理由・メモ" className="w-full border rounded-lg px-3 py-2 text-sm"/>
           </div>
-          <button onClick={handleAdjust} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">確定</button>
-          <button onClick={()=>setAdjusting(null)} className="px-4 py-2 bg-white border rounded-lg text-sm">キャンセル</button>
         </div>
         <p className="text-xs text-gray-400">現在庫: {p?.stock}{p?.unit} → 調整後: {adjType==="入庫" ? p?.stock+adjQty : Math.max(0,p?.stock-adjQty)}{p?.unit}</p>
+        <div className="flex gap-2">
+          <button onClick={handleAdjust} className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium">確定</button>
+          <button onClick={()=>setAdjusting(null)} className="flex-1 py-2.5 bg-white border rounded-lg text-sm">キャンセル</button>
+        </div>
       </div>
     );})()}
 
-    <div className="bg-white rounded-xl border overflow-hidden">
+    {/* Mobile: Card Layout */}
+    <div className="md:hidden space-y-2">
+      {[...products].sort((a, b) => a.stock - b.stock).map(p => {
+        const pct = Math.min(p.stock / 200 * 100, 100);
+        const barColor = p.stock < 35 ? "bg-red-500" : p.stock < 60 ? "bg-yellow-500" : "bg-green-500";
+        return (
+          <div key={p.id} className="bg-white rounded-xl border p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0"><CategoryIcon category={p.category} size={20}/></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-bold truncate">{p.name}</p>
+                  {p.stock < 20 ? <Badge status="危険" /> : p.stock < 50 ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 shrink-0">低在庫</span> : <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-800 shrink-0">適正</span>}
+                </div>
+                <p className="text-[10px] text-gray-400">{p.sku}</p>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="flex-1">
+                <div className="w-full bg-gray-100 rounded-full h-2"><div className={`h-2 rounded-full ${barColor} transition-all`} style={{width:`${pct}%`}}/></div>
+              </div>
+              <span className="text-sm font-bold shrink-0 w-16 text-right">{p.stock}{p.unit}</span>
+              <button onClick={()=>{setAdjusting(p.id);setAdjQty(0);setAdjType("入庫");}} className="text-xs text-blue-600 font-medium shrink-0 px-2 py-1 bg-blue-50 rounded-lg">調整</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Desktop: Table Layout */}
+    <div className="hidden md:block bg-white rounded-xl border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
