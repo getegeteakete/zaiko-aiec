@@ -413,21 +413,31 @@ const OperatorLayout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const menu = [
-    { id: "operator", label: "ダッシュボード", icon: Icons.home },
-    { id: "operator/orders", label: "受注管理", icon: Icons.orders },
-    { id: "operator/payments", label: "決済管理", icon: Icons.dollar },
-    { id: "operator/shipping", label: "発送管理", icon: Icons.truck },
-    { id: "operator/products", label: "商品管理", icon: Icons.package },
-    { id: "operator/inventory", label: "在庫管理", icon: Icons.inventory },
-    { id: "operator/procurement", label: "仕入管理", icon: Icons.package },
-    { id: "operator/analytics", label: "売上分析", icon: Icons.chart },
-    { id: "operator/customers", label: "顧客管理", icon: Icons.users },
-    { id: "operator/pricing", label: "価格・掛率管理", icon: Icons.dollar },
-    { id: "operator/ai-analytics", label: "AI分析センター", icon: Icons.brain },
-    { id: "operator/ai-articles", label: "AI記事生成", icon: Icons.orders },
-    { id: "operator/chats", label: "チャット管理", icon: Icons.brain },
-    { id: "operator/master", label: "マスタ管理", icon: Icons.settings },
-    { id: "operator/settings", label: "設定", icon: Icons.settings },
+    { group: "基本", color: "#67B8E3", items: [
+      { id: "operator", label: "ダッシュボード", icon: Icons.home },
+    ]},
+    { group: "受注・顧客管理", color: "#FACC15", items: [
+      { id: "operator/orders", label: "受注管理", icon: Icons.orders },
+      { id: "operator/payments", label: "決済管理", icon: Icons.dollar },
+      { id: "operator/shipping", label: "発送管理", icon: Icons.truck },
+      { id: "operator/analytics", label: "売上分析", icon: Icons.chart },
+      { id: "operator/customers", label: "顧客管理", icon: Icons.users },
+    ]},
+    { group: "仕入・在庫管理", color: "#F9A8D4", items: [
+      { id: "operator/products", label: "商品管理", icon: Icons.package },
+      { id: "operator/inventory", label: "在庫管理", icon: Icons.inventory },
+      { id: "operator/procurement", label: "仕入管理", icon: Icons.package },
+      { id: "operator/pricing", label: "価格・掛率管理", icon: Icons.dollar },
+    ]},
+    { group: "AI機能", color: "#4ADE80", items: [
+      { id: "operator/ai-analytics", label: "AI分析センター", icon: Icons.brain },
+      { id: "operator/ai-articles", label: "AI記事生成", icon: Icons.orders },
+      { id: "operator/chats", label: "チャット管理", icon: Icons.brain },
+    ]},
+    { group: "システム", color: "#94A3B8", items: [
+      { id: "operator/master", label: "マスタ管理", icon: Icons.settings },
+      { id: "operator/settings", label: "設定", icon: Icons.settings },
+    ]},
   ];
 
   const Sidebar = ({ mobile }) => (
@@ -438,12 +448,30 @@ const OperatorLayout = ({ children }) => {
           {(!collapsed || mobile) && <span className="font-black text-lg"><img src="/logo.png" alt="シンガタ" style={{height:"28px"}}/></span>}
           <button onClick={() => mobile ? setMobileOpen(false) : setCollapsed(!collapsed)} className="p-1 hover:bg-white/10 rounded"><Icons.menu size={18} /></button>
         </div>
-        <nav className="flex-1 py-2 overflow-y-auto">
-          {menu.map(m => (
-            <button key={m.id} onClick={() => { navigate(m.id); setMobileOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition ${page === m.id ? "bg-blue-600/20 text-blue-400 border-r-2 border-blue-400" : "text-white/60 hover:bg-white/5 hover:text-white"}`}>
-              <m.icon size={18} />
-              {(!collapsed || mobile) && <span>{m.label}</span>}
-            </button>
+        <nav className="flex-1 py-1 overflow-y-auto">
+          {menu.map(g => (
+            <div key={g.group}>
+              {(!collapsed || mobile) && (
+                <div className="flex items-center gap-2 px-4 pt-4 pb-1">
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{background: g.color}}/>
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{color: g.color}}>{g.group}</span>
+                </div>
+              )}
+              {collapsed && !mobile && <div className="mx-3 my-2 border-t" style={{borderColor: g.color + '40'}}/>}
+              {g.items.map(m => (
+                <button key={m.id} onClick={() => { navigate(m.id); setMobileOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition ${
+                    page === m.id
+                      ? "font-semibold"
+                      : "text-white/50 hover:text-white"
+                  }`}
+                  style={page === m.id ? {color: g.color, background: g.color + '15', borderRight: `3px solid ${g.color}`} : {}}
+                >
+                  <m.icon size={17} />
+                  {(!collapsed || mobile) && <span>{m.label}</span>}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
         {(!collapsed || mobile) && (
@@ -469,10 +497,15 @@ const OperatorLayout = ({ children }) => {
       {mobileOpen && <Sidebar mobile />}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+        {(() => { const g = menu.find(g => g.items.some(m => m.id === page)); const c = g?.color || '#67B8E3'; const gn = g?.group || '基本'; return (
+        <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-40" style={{borderTopWidth:'3px', borderTopColor: c}}>
           <div className="flex items-center gap-3">
             <button onClick={() => setMobileOpen(true)} className="md:hidden p-1"><Icons.menu size={20} /></button>
-            <h2 className="font-semibold text-sm sm:text-base">{menu.find(m => m.id === page)?.label || "ダッシュボード"}</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-sm" style={{background: c}}/>
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline" style={{color: c}}>{gn}</span>
+            </div>
+            <h2 className="font-semibold text-sm sm:text-base">{menu.flatMap(g=>g.items).find(m => m.id === page)?.label || "ダッシュボード"}</h2>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setAiChatOpen(true)} className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
@@ -484,6 +517,7 @@ const OperatorLayout = ({ children }) => {
             </button>
           </div>
         </header>
+        );})()}
         <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
       {/* AI Chat */}
