@@ -152,45 +152,67 @@ body {
   --danger: #DC2626;
 }
 
-/* ═══ Responsive Improvements ═══ */
-.container { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
 
-/* Mobile-first table improvements */
+/* ═══ Responsive Improvements ═══ */
+
+/* Mobile-first */
 @media (max-width: 640px) {
+  /* Tables */
   table { font-size: 13px; }
   table th, table td { padding: 8px 6px !important; }
   .overflow-x-auto { -webkit-overflow-scrolling: touch; }
 
-  /* Stack form grids */
-  .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr !important; }
-  .sm\:grid-cols-3, .sm\:grid-cols-4, .lg\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
-
-  /* Full-width buttons on mobile */
-  .flex.gap-2 > button, .flex.gap-3 > button { font-size: 13px; padding: 8px 12px; }
-
-  /* Compact cards */
+  /* Cards */
   .rounded-xl.border.p-5, .rounded-xl.border.p-4 { padding: 12px !important; }
 
-  /* Better tap targets */
+  /* Touch targets */
   button, select, input { min-height: 40px; }
-  select { font-size: 14px !important; }
-
-  /* Admin header */
-  header.sticky { padding: 8px 12px !important; }
+  select { font-size: 16px !important; } /* Prevent iOS zoom */
+  input[type="text"], input[type="number"], input[type="email"], input[type="date"], textarea {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
 }
 
-/* Tablet adjustments */
+/* Tablet */
 @media (min-width: 641px) and (max-width: 1024px) {
   .xl\:grid-cols-5 { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
-/* Better touch scrolling for sidebar */
+/* Sidebar scroll */
 nav.overflow-y-auto {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
 
-/* Admin sidebar mobile overlay */
+/* Admin main on mobile - account for bottom nav */
 @media (max-width: 768px) {
-  [data-theme="dark"] main { padding: 12px !important; }
+  [data-theme="dark"] main { padding-bottom: 80px !important; }
+}
+
+/* Safe area */
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Hide scrollbar on category bar */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ═══ BRIDGE VARIABLES ═══ */
+:root {
+  --navy-950: #0F172A;
+  --navy-900: #1E293B;
+  --navy-800: #1E3A5F;
+  --steel-500: #2563EB;
+  --steel-400: #3B82F6;
+  --steel-300: #93C5FD;
+  --steel-100: #DBEAFE;
+  --steel-50: #EFF6FF;
+  --amber-500: #2563EB;
+  --amber-400: #3B82F6;
+  --amber-300: #60A5FA;
+  --slate-600: #475569;
+  --slate-400: #94A3B8;
+  --slate-200: #E2E8F0;
+  --slate-100: #F1F5F9;
+  --slate-50: #F8FAFC;
+  --danger: #DC2626;
 }

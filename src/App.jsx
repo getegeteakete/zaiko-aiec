@@ -610,18 +610,18 @@ const OperatorLayout = ({ children }) => {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
         {(() => { const g = menu.find(g => g.items.some(m => m.id === page)); const c = g?.color || '#67B8E3'; const gn = g?.group || '基本'; return (
-        <header className="bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-40" style={{borderTopWidth:'3px', borderTopColor: c}}>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-1"><Icons.menu size={20} /></button>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-sm" style={{background: c}}/>
-              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline" style={{color: c}}>{gn}</span>
+        <header className="bg-white border-b px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between sticky top-0 z-40" style={{borderTopWidth:'3px', borderTopColor: c}}>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <button onClick={() => setMobileOpen(true)} className="md:hidden p-1.5 -ml-1"><Icons.menu size={20} /></button>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-2 h-2 rounded-sm shrink-0" style={{background: c}}/>
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline shrink-0" style={{color: c}}>{gn}</span>
+              <h2 className="font-semibold text-sm sm:text-base truncate">{menu.flatMap(g=>g.items).find(m => m.id === page)?.label || "ダッシュボード"}</h2>
             </div>
-            <h2 className="font-semibold text-sm sm:text-base">{menu.flatMap(g=>g.items).find(m => m.id === page)?.label || "ダッシュボード"}</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setAiChatOpen(true)} className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
-              <Icons.brain size={16} /> AIアシスト
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button onClick={() => setAiChatOpen(true)} className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-100 transition">
+              <Icons.brain size={14} /> <span className="hidden sm:inline">AIアシスト</span><span className="sm:hidden">AI</span>
             </button>
             <button className="relative p-2 hover:bg-gray-100 rounded-lg">
               <Icons.bell size={18} />
@@ -630,7 +630,32 @@ const OperatorLayout = ({ children }) => {
           </div>
         </header>
         );})()}
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto pb-20 md:pb-6">{children}</main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-50 px-1 py-1.5 safe-area-bottom">
+          <div className="flex items-center justify-around">
+            {[
+              {id:"operator", label:"ホーム", Ic:Icons.home, color:"#67B8E3"},
+              {id:"operator/orders", label:"受注", Ic:Icons.orders, color:"#FACC15"},
+              {id:"operator/products", label:"商品", Ic:Icons.package, color:"#F9A8D4"},
+              {id:"operator/inventory", label:"在庫", Ic:Icons.inventory, color:"#F9A8D4"},
+              {id:"operator/billing", label:"請求", Ic:Icons.orders, color:"#FACC15"},
+            ].map(m => {
+              const active = page === m.id;
+              return (
+                <button key={m.id} onClick={() => navigate(m.id)} className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition" style={active ? {color: m.color} : {color: '#94A3B8'}}>
+                  <m.Ic size={20}/>
+                  <span className="text-[9px] font-medium">{m.label}</span>
+                </button>
+              );
+            })}
+            <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-gray-400">
+              <Icons.menu size={20}/>
+              <span className="text-[9px] font-medium">その他</span>
+            </button>
+          </div>
+        </nav>
       </div>
       {/* AI Chat */}
       {aiChatOpen && <AIChat />}
@@ -657,15 +682,15 @@ const DashboardPage = () => {
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {kpis.map((k, i) => (
-          <div key={i} className="bg-white rounded-xl border p-5 hover:shadow-md transition">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">{k.label}</span>
-              <k.icon size={18} className="text-gray-300" />
+          <div key={i} className="bg-white rounded-xl border p-3 sm:p-5 hover:shadow-md transition">
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
+              <span className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">{k.label}</span>
+              <k.icon size={16} className="text-gray-300 hidden sm:block" />
             </div>
-            <div className="text-2xl font-bold mb-1">{k.value}</div>
-            <span className={`text-xs font-medium ${k.color}`}>{k.change}</span>
+            <div className="text-lg sm:text-2xl font-bold mb-0.5">{k.value}</div>
+            <span className={`text-[10px] sm:text-xs font-medium ${k.color}`}>{k.change}</span>
           </div>
         ))}
       </div>
@@ -674,7 +699,7 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border p-5">
           <h3 className="font-semibold mb-4">月別売上推移</h3>
-          <div className="flex items-end gap-3 h-48">
+          <div className="flex items-end gap-2 sm:gap-3 h-36 sm:h-48">
             {chartData.map((d, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-xs text-gray-400">¥{(d.sales / 10000).toFixed(0)}万</span>
@@ -710,7 +735,7 @@ const DashboardPage = () => {
       {/* Low Stock Alert */}
       <div className="bg-white rounded-xl border p-5">
         <h3 className="font-semibold mb-4">在庫アラート</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
           {products.filter(p => p.stock < 50).map(p => (
             <div key={p.id} className="flex items-center gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
               <CategoryIcon category={p.category} size={24} />
@@ -759,7 +784,7 @@ const OrdersPage = () => {
       {showForm && (
         <div className="bg-white rounded-xl border p-5 space-y-3">
           <h3 className="font-semibold text-sm border-b pb-2">新規受注登録</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div><label className="text-xs text-gray-500 block mb-1">顧客名 *</label>
               <select value={form.customerName} onChange={e=>setForm({...form, customerName: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
                 <option value="">選択してください</option>
@@ -850,7 +875,7 @@ const ProductsPage = () => {
       {showForm && (
         <div className="bg-white rounded-xl border p-5 space-y-3">
           <h3 className="font-semibold text-sm border-b pb-2">新規商品登録</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div><label className="text-xs text-gray-500 block mb-1">商品名 *</label>
               <input value={form.name} onChange={e=>setForm({...form, name: e.target.value})} placeholder="例: クラフト手提げ袋 特大" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
             <div><label className="text-xs text-gray-500 block mb-1">SKU *</label>
@@ -934,7 +959,7 @@ const CustomersPage = () => {
     {showForm && (
       <div className="bg-white rounded-xl border p-5 space-y-3">
         <h3 className="font-semibold text-sm border-b pb-2">新規顧客登録</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div><label className="text-xs text-gray-500 block mb-1">会社名 *</label>
             <input value={form.company_name} onChange={e=>setForm({...form, company_name: e.target.value})} placeholder="例: 株式会社サンプル" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           <div><label className="text-xs text-gray-500 block mb-1">担当者名</label>
@@ -1025,7 +1050,7 @@ const InventoryPage = () => {
     <div className="flex items-center justify-between">
       <div><h2 className="font-semibold text-sm">在庫管理</h2><p className="text-xs text-gray-500">在庫状況の確認・入出庫管理・アラート管理</p></div>
     </div>
-    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
       {[
         { label: "総アイテム", value: products.length, color: "text-blue-600" },
         { label: "適正在庫", value: products.filter(p => p.stock >= 50).length, color: "text-green-600" },
@@ -1042,7 +1067,7 @@ const InventoryPage = () => {
     {adjusting && (() => { const p = products.find(x=>x.id===adjusting); return (
       <div className="bg-white rounded-xl border p-5 space-y-3">
         <h3 className="font-semibold text-sm">在庫調整: {p?.name}</h3>
-        <div className="flex gap-3 items-end flex-wrap">
+        <div className="grid grid-cols-2 sm:flex sm:gap-3 gap-2 items-end">
           <div><label className="text-xs text-gray-500 block mb-1">種別</label>
             <select value={adjType} onChange={e=>setAdjType(e.target.value)} className="border rounded-lg px-3 py-2 text-sm"><option>入庫</option><option>出庫</option><option>棚卸し</option></select>
           </div>
@@ -1266,7 +1291,7 @@ const BillingPage = () => {
           {editingCustomer && (
             <div className="bg-white rounded-xl border p-5 space-y-4">
               <h3 className="font-semibold text-sm border-b pb-2">{customers.find(c=>c.id===editingCustomer)?.companyName} の請求設定</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-gray-500 block mb-1">締め日</label>
                   <select value={settingsForm.billing_cycle} onChange={e => setSettingsForm({...settingsForm, billing_cycle: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
@@ -1303,7 +1328,7 @@ const BillingPage = () => {
 
       {tab === "invoices" && (
         <div className="space-y-3">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {[
               { l:"総請求額", v:`¥${fmt(invoices.reduce((s,i)=>s+i.total,0))}` },
               { l:"入金済", v:`¥${fmt(invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+i.total,0))}` },
@@ -1350,7 +1375,7 @@ const PaymentsPage = () => {
   return (
   <div className="space-y-4">
     <div><h2 className="font-semibold text-sm">決済管理</h2><p className="text-xs text-gray-500">決済状況の確認と管理を行います</p></div>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
       {[{l:"本日の決済額",v:`¥${fmt(cn_paid)}`,c:`${orders_paid}件の決済`},{l:"今月の決済額",v:`¥${fmt(cn_total)}`},{l:"累計決済額",v:`¥${fmt(cn_total*12)}`,c:"累計決済完了"},{l:"確認が必要な決済",v:`${orders_unpaid}件`}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
     </div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["注文番号","顧客名","金額","決済方法","決済状況","決済日時"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
@@ -1400,7 +1425,7 @@ const ProcurementPage = () => {
     {showForm && (
       <div className="bg-white rounded-xl border p-5 space-y-3">
         <h3 className="font-semibold text-sm border-b pb-2">新規発注登録</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div><label className="text-xs text-gray-500 block mb-1">仕入れ先 *</label>
             <select value={form.supplier} onChange={e=>setForm({...form, supplier: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
               {suppliers.map(s=><option key={s.n} value={s.n}>{s.n}</option>)}
@@ -1425,7 +1450,7 @@ const ProcurementPage = () => {
       </div>
     )}
 
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
       {[{l:"発注総数",v:"24件",c:"今月: 8件"},{l:"今月の仕入れ額",v:`¥${fmt(3850000)}`,c:`累計: ¥${fmt(46200000)}`},{l:"処理待ち",v:"3件"},{l:"納品待ち",v:"5件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">仕入れ先一覧</h3>
@@ -1466,7 +1491,7 @@ const AIArticlesPage = () => {
   const arts = [{id:"a1",title:"紙袋の種類と選び方ガイド",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：エコ素材紙袋シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
   return (<div className="space-y-4">
     <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button onClick={()=>setAiChatOpen(true)} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
       {[{l:"総記事数",v:`${arts.length}件`},{l:"公開済み",v:`${arts.filter(a=>a.status==="公開済").length}件`},{l:"編集中",v:`${arts.filter(a=>a.status==="下書き").length}件`},{l:"今月生成",v:"2件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
     </div>
     <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["タイトル","カテゴリ","ステータス","文字数","日付"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
@@ -1480,7 +1505,7 @@ const ChatsPage = () => {
   const [sel,setSel] = useState(null);
   return (<div className="space-y-4">
     <div><h2 className="font-semibold text-sm">チャット管理</h2><p className="text-xs text-gray-500">顧客とのチャットセッションの管理と対応</p></div>
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
       {[{l:"チャット",v:`${chats.length}件`},{l:"未読メッセージ",v:"3件"},{l:"解決済み",v:`${chats.filter(c=>c.status==="解決済").length}件`},{l:"今月",v:"24件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1748,9 +1773,9 @@ const AIChat = () => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t">
+      <div className="p-3 sm:p-4 border-t safe-area-bottom">
         <div className="flex gap-2">
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="メッセージを入力..." className="flex-1 px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="メッセージを入力..." className="flex-1 px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" style={{fontSize:'16px'}} />
           <button onClick={sendMessage} disabled={loading || !input.trim()} className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition disabled:opacity-50">
             <Icons.send size={18} />
           </button>
