@@ -13,35 +13,45 @@ const useApp = () => useContext(AppContext);
 // MOCK DATA
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const PRODUCTS = [
-  { id: "p1", name: "ステンレス鋼管 50A", category: "配管材", price: 4800, stock: 120, unit: "本", image: "pipe", sku: "PIP-SS-50A", description: "外径60.5mm × 厚さ2.0mm × 長さ4000mm。日本製鉄製。", rating: 4.5 },
-  { id: "p2", name: "銅管 25A", category: "配管材", price: 3200, stock: 18, unit: "本", image: "pipe", sku: "PIP-CU-25A", description: "外径28.58mm × 厚さ1.0mm × 長さ4000mm。三菱マテリアル製。", rating: 4.8 },
-  { id: "p3", name: "VLP管 100A", category: "配管材", price: 2800, stock: 85, unit: "本", image: "pipe", sku: "PIP-VL-100A", description: "外径114mm × 長さ4000mm。クボタケミックス製。", rating: 4.3 },
-  { id: "p4", name: "ボールバルブ 50A", category: "バルブ", price: 8500, stock: 45, unit: "個", image: "bolt", sku: "VLV-BB-50A", description: "ステンレス製 フルボア JIS10K。キッツ製。", rating: 4.9 },
-  { id: "p5", name: "渦巻ポンプ 2HP", category: "ポンプ", price: 125000, stock: 8, unit: "台", image: "gear", sku: "PMP-VR-2HP", description: "揚程25m 流量200L/min。荏原製作所製。", rating: 4.6 },
-  { id: "p6", name: "ロックウール保温材 50mm", category: "保温材", price: 1800, stock: 200, unit: "枚", image: "box", sku: "INS-RW-50", description: "厚さ50mm × 幅610mm × 長さ1820mm。ニチアス製。", rating: 4.1 },
-  { id: "p7", name: "ウェルドネックフランジ 80A", category: "フランジ", price: 6200, stock: 35, unit: "個", image: "ring", sku: "FLG-WN-80A", description: "JIS10K ステンレス製。ベンカン製。", rating: 4.4 },
-  { id: "p8", name: "PTFEガスケット 80A", category: "ガスケット", price: 850, stock: 150, unit: "枚", image: "ring", sku: "GSK-PT-80A", description: "JIS10K 厚さ3mm。バルカー製。", rating: 4.7 },
-  { id: "p9", name: "ステンレスボルト M16×60", category: "締結材", price: 320, stock: 500, unit: "本", image: "bolt", sku: "BLT-SS-M16", description: "SUS304 六角ボルト。サンコーインダストリー製。", rating: 4.2 },
-  { id: "p10", name: "90°エルボ 50A", category: "継手", price: 3500, stock: 60, unit: "個", image: "pipe", sku: "FIT-EL-50A", description: "ステンレス製 ロングラジアス。ベンカン製。", rating: 4.5 },
+  { id: "p1", name: "クラフト手提げ袋 小", category: "手提げ袋", price: 18, stock: 5000, unit: "枚", image: "bag", sku: "KB-S-001", description: "未晒クラフト紙 120g/㎡。W220×D120×H250mm。丸紐付き。", rating: 4.5 },
+  { id: "p2", name: "クラフト手提げ袋 中", category: "手提げ袋", price: 25, stock: 3200, unit: "枚", image: "bag", sku: "KB-M-001", description: "未晒クラフト紙 120g/㎡。W320×D115×H310mm。丸紐付き。", rating: 4.7 },
+  { id: "p3", name: "クラフト手提げ袋 大", category: "手提げ袋", price: 35, stock: 2800, unit: "枚", image: "bag", sku: "KB-L-001", description: "未晒クラフト紙 120g/㎡。W380×D150×H500mm。平紐付き。", rating: 4.6 },
+  { id: "p4", name: "白無地 手提げ袋 S", category: "手提げ袋", price: 22, stock: 4500, unit: "枚", image: "bag", sku: "WB-S-001", description: "晒クラフト紙 100g/㎡。W220×D120×H250mm。紙平紐。", rating: 4.4 },
+  { id: "p5", name: "カラー手提げ袋 赤 M", category: "カラー袋", price: 38, stock: 1800, unit: "枚", image: "bag", sku: "CB-R-M01", description: "カラークラフト紙。W320×D115×H310mm。アクリル丸紐。", rating: 4.8 },
+  { id: "p6", name: "カラー手提げ袋 ネイビー M", category: "カラー袋", price: 38, stock: 2200, unit: "枚", image: "bag", sku: "CB-N-M01", description: "カラークラフト紙。W320×D115×H310mm。アクリル丸紐。", rating: 4.8 },
+  { id: "p7", name: "マットラミネート袋 黒 M", category: "ラミネート袋", price: 65, stock: 1200, unit: "枚", image: "bag", sku: "ML-B-M01", description: "マットPP加工。W320×D115×H310mm。ロープ紐。高級感。", rating: 4.9 },
+  { id: "p8", name: "グロスラミネート袋 白 L", category: "ラミネート袋", price: 85, stock: 800, unit: "枚", image: "bag", sku: "GL-W-L01", description: "光沢PP加工。W380×D150×H500mm。ロープ紐。光沢仕上げ。", rating: 4.7 },
+  { id: "p9", name: "ボトル用紙袋 ワイン1本", category: "ボトル袋", price: 42, stock: 1500, unit: "枚", image: "bag", sku: "BT-W-001", description: "ワインボトル1本用。W130×D90×H360mm。紐付き。", rating: 4.6 },
+  { id: "p10", name: "ボトル用紙袋 ワイン2本", category: "ボトル袋", price: 58, stock: 900, unit: "枚", image: "bag", sku: "BT-W-002", description: "ワインボトル2本用。W200×D90×H360mm。仕切り付き。", rating: 4.5 },
+  { id: "p11", name: "平袋 茶 中", category: "平袋", price: 8, stock: 10000, unit: "枚", image: "bag", sku: "FB-B-M01", description: "未晒クラフト紙。W200×H280mm。食品包装にも。", rating: 4.3 },
+  { id: "p12", name: "角底紙袋 白 小", category: "角底袋", price: 12, stock: 8000, unit: "枚", image: "bag", sku: "SB-W-S01", description: "晒クラフト紙。W130×D80×H235mm。パン・菓子用。", rating: 4.4 },
+  { id: "p13", name: "角底紙袋 茶 大", category: "角底袋", price: 15, stock: 6000, unit: "枚", image: "bag", sku: "SB-B-L01", description: "未晒クラフト紙。W260×D100×H360mm。テイクアウト用。", rating: 4.5 },
+  { id: "p14", name: "宅配袋 A4サイズ", category: "宅配袋", price: 28, stock: 3000, unit: "枚", image: "bag", sku: "DL-A4-01", description: "テープ付き宅配用紙袋。W250×D50×H340mm。", rating: 4.6 },
+  { id: "p15", name: "宅配袋 B4サイズ", category: "宅配袋", price: 35, stock: 2500, unit: "枚", image: "bag", sku: "DL-B4-01", description: "テープ付き宅配用紙袋。W320×D50×H400mm。", rating: 4.5 },
+  { id: "p16", name: "リボン付きギフト袋 S", category: "ギフト袋", price: 55, stock: 1000, unit: "枚", image: "bag", sku: "GF-R-S01", description: "リボン付きギフト用。W180×D100×H250mm。結婚式・記念品。", rating: 4.9 },
+  { id: "p17", name: "窓付き紙袋 食品用 M", category: "食品用袋", price: 20, stock: 4000, unit: "枚", image: "bag", sku: "FD-W-M01", description: "透明窓付き。W150×D90×H280mm。焼き菓子・パン用。", rating: 4.7 },
+  { id: "p18", name: "耐水紙袋 フラワー用 L", category: "フラワー袋", price: 48, stock: 600, unit: "枚", image: "bag", sku: "FL-L-001", description: "耐水加工。W350×D150×H450mm。花束・鉢植え用。", rating: 4.6 },
+  { id: "p19", name: "エコバッグ型紙袋 M", category: "エコ袋", price: 30, stock: 2000, unit: "枚", image: "bag", sku: "EC-M-001", description: "再生紙100%。W320×D115×H310mm。FSC認証。", rating: 4.8 },
+  { id: "p20", name: "OPP透明袋 A4", category: "透明袋", price: 5, stock: 15000, unit: "枚", image: "bag", sku: "OP-A4-01", description: "テープ付きOPP袋。W225×H310+40mm。カタログ・DM用。", rating: 4.4 },
 ];
 
-const CATEGORIES = ["すべて", "配管材", "バルブ", "ポンプ", "保温材", "フランジ", "ガスケット", "締結材", "継手"];
+const CATEGORIES = ["すべて", "手提げ袋", "カラー袋", "ラミネート袋", "ボトル袋", "平袋", "角底袋", "宅配袋", "ギフト袋", "食品用袋", "フラワー袋", "エコ袋", "透明袋"];
 
 const CUSTOMERS = [
-  { id: "c1", companyName: "山田設備工業株式会社", contactName: "山田 太郎", email: "yamada@yamada-setsubi.jp", phone: "03-1234-5678", tier: "プラチナ", totalOrders: 96, totalSpent: 18500000 },
-  { id: "c2", companyName: "佐藤管工株式会社", contactName: "佐藤 一郎", email: "sato@sato-kanko.jp", phone: "045-2345-6789", tier: "ゴールド", totalOrders: 64, totalSpent: 12800000 },
-  { id: "c3", companyName: "田中建設株式会社", contactName: "田中 次郎", email: "tanaka@tanaka-kensetsu.jp", phone: "052-3456-7890", tier: "ゴールド", totalOrders: 48, totalSpent: 9600000 },
-  { id: "c4", companyName: "鈴木産業株式会社", contactName: "鈴木 三郎", email: "suzuki@suzuki-sangyo.jp", phone: "06-4567-8901", tier: "シルバー", totalOrders: 32, totalSpent: 6400000 },
-  { id: "c5", companyName: "高橋工務店", contactName: "高橋 四郎", email: "takahashi@takahashi-komu.jp", phone: "092-5678-9012", tier: "スタンダード", totalOrders: 15, totalSpent: 3200000 },
+  { id: "c1", companyName: "花よし生花店", contactName: "花田 美咲", email: "hanada@hanayoshi.jp", phone: "03-5555-1234", tier: "プラチナ", totalOrders: 96, totalSpent: 18500000 },
+  { id: "c2", companyName: "パティスリー・ルミエール", contactName: "佐藤 シェフ", email: "sato@lumiere.jp", phone: "045-2345-6789", tier: "ゴールド", totalOrders: 64, totalSpent: 12800000 },
+  { id: "c3", companyName: "ワインショップ・ソムリエ", contactName: "田中 裕介", email: "tanaka@tanaka-kensetsu.jp", phone: "052-3456-7890", tier: "ゴールド", totalOrders: 48, totalSpent: 9600000 },
+  { id: "c4", companyName: "アパレルセレクト TOKYO", contactName: "鈴木 麻衣", email: "suzuki@suzuki-sangyo.jp", phone: "06-4567-8901", tier: "シルバー", totalOrders: 32, totalSpent: 6400000 },
+  { id: "c5", companyName: "ECサポート物流", contactName: "高橋 健太", email: "takahashi@takahashi-komu.jp", phone: "092-5678-9012", tier: "スタンダード", totalOrders: 15, totalSpent: 3200000 },
 ];
 
 const generateOrders = () => [
-  { id: "o1", orderNumber: "PO-2024-0001", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 100, unitPrice: 4080 }, { productId: "p4", productName: "ボールバルブ 50A", quantity: 20, unitPrice: 7225 }], total: 552500, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-15", deliveryDate: "2024-01-17", paymentMethod: "銀行振込", carrier: "ヤマト運輸", trackingNumber: "1234-5678-9012" },
-  { id: "o2", orderNumber: "PO-2024-0002", customerId: "c2", customerName: "佐藤管工株式会社", items: [{ productId: "p2", productName: "銅管 25A", quantity: 50, unitPrice: 2816 }, { productId: "p10", productName: "90°エルボ 50A", quantity: 30, unitPrice: 3080 }], total: 233200, status: "発送済", paymentStatus: "決済済", orderDate: "2024-01-16", deliveryDate: "2024-01-18", paymentMethod: "クレジットカード", carrier: "佐川急便", trackingNumber: "9876-5432-1098" },
-  { id: "o3", orderNumber: "PO-2024-0003", customerId: "c3", customerName: "田中建設株式会社", items: [{ productId: "p3", productName: "VLP管 100A", quantity: 200, unitPrice: 2464 }, { productId: "p7", productName: "ウェルドネックフランジ 80A", quantity: 40, unitPrice: 5456 }], total: 711040, status: "処理中", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
-  { id: "o4", orderNumber: "PO-2024-0004", customerId: "c4", customerName: "鈴木産業株式会社", items: [{ productId: "p5", productName: "渦巻ポンプ 2HP", quantity: 2, unitPrice: 115000 }, { productId: "p6", productName: "ロックウール保温材 50mm", quantity: 100, unitPrice: 1656 }], total: 395600, status: "確認待ち", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
-  { id: "o5", orderNumber: "PO-2024-0005", customerId: "c1", customerName: "山田設備工業株式会社", items: [{ productId: "p8", productName: "PTFEガスケット 80A", quantity: 200, unitPrice: 723 }], total: 144600, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-14", deliveryDate: "2024-01-15", paymentMethod: "銀行振込", carrier: "西濃運輸", trackingNumber: "5555-6666-7777" },
-  { id: "o6", orderNumber: "PO-2024-0006", customerId: "c5", customerName: "高橋工務店", items: [{ productId: "p1", productName: "ステンレス鋼管 50A", quantity: 30, unitPrice: 4560 }], total: 136800, status: "確認済", paymentStatus: "未決済", orderDate: "2024-01-18", paymentMethod: "現金" },
+  { id: "o1", orderNumber: "PO-2024-0001", customerId: "c1", customerName: "花よし生花店", items: [{ productId: "p1", productName: "クラフト手提げ袋 小", quantity: 500, unitPrice: 18 }, { productId: "p5", productName: "カラー手提げ袋 赤 M", quantity: 200, unitPrice: 38 }], total: 16600, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-15", deliveryDate: "2024-01-17", paymentMethod: "銀行振込", carrier: "ヤマト運輸", trackingNumber: "1234-5678-9012" },
+  { id: "o2", orderNumber: "PO-2024-0002", customerId: "c2", customerName: "パティスリー・ルミエール", items: [{ productId: "p12", productName: "角底紙袋 白 小", quantity: 1000, unitPrice: 12 }, { productId: "p17", productName: "窓付き紙袋 食品用 M", quantity: 500, unitPrice: 20 }], total: 22000, status: "発送済", paymentStatus: "決済済", orderDate: "2024-01-16", deliveryDate: "2024-01-18", paymentMethod: "クレジットカード", carrier: "佐川急便", trackingNumber: "9876-5432-1098" },
+  { id: "o3", orderNumber: "PO-2024-0003", customerId: "c3", customerName: "ワインショップ・ソムリエ", items: [{ productId: "p9", productName: "ボトル用紙袋 ワイン1本", quantity: 300, unitPrice: 42 }, { productId: "p10", productName: "ボトル用紙袋 ワイン2本", quantity: 200, unitPrice: 58 }], total: 24200, status: "処理中", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
+  { id: "o4", orderNumber: "PO-2024-0004", customerId: "c4", customerName: "アパレルセレクト TOKYO", items: [{ productId: "p7", productName: "マットラミネート袋 黒 M", quantity: 500, unitPrice: 65 }, { productId: "p8", productName: "グロスラミネート袋 白 L", quantity: 300, unitPrice: 85 }], total: 58000, status: "確認待ち", paymentStatus: "未決済", orderDate: "2024-01-17", paymentMethod: "銀行振込" },
+  { id: "o5", orderNumber: "PO-2024-0005", customerId: "c1", customerName: "花よし生花店", items: [{ productId: "p18", productName: "耐水紙袋 フラワー用 L", quantity: 200, unitPrice: 48 }], total: 9600, status: "配達完了", paymentStatus: "決済済", orderDate: "2024-01-14", deliveryDate: "2024-01-15", paymentMethod: "銀行振込", carrier: "西濃運輸", trackingNumber: "5555-6666-7777" },
+  { id: "o6", orderNumber: "PO-2024-0006", customerId: "c5", customerName: "ECサポート物流", items: [{ productId: "p14", productName: "宅配袋 A4サイズ", quantity: 2000, unitPrice: 28 }, { productId: "p15", productName: "宅配袋 B4サイズ", quantity: 1000, unitPrice: 35 }], total: 91000, status: "確認済", paymentStatus: "未決済", orderDate: "2024-01-18", paymentMethod: "銀行振込" },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -102,7 +112,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-grid" style={{background: 'var(--slate-50)'}}>
       {/* ── Top Bar ── */}
       <div className="bg-industrial text-white/70 text-xs py-1.5 px-4 flex items-center justify-between">
-        <span>シンガタ株式会社 - 法人向け配管材・資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
+        <span>シンガタ株式会社 - 法人向け紙袋・包装資材の卸売 ｜ 最短翌日配送 ｜ 掛売対応</span>
         <div className="flex items-center gap-4">
           <button onClick={() => navigate("buyer/account")} className="hover:text-white transition">マイアカウント</button>
           <button onClick={() => navigate("operator")} className="hover:text-white transition">管理者ログイン</button>
@@ -144,9 +154,9 @@ const LandingPage = () => {
           <div className="flex-1">
             <div className="inline-block mb-3 px-3 py-1 rounded text-xs font-semibold" style={{background:'rgba(212,147,10,.15)',color:'var(--amber-400)'}}>法人専用 ｜ 掛率対応 ｜ AI在庫提案</div>
             <h1 className="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
-              配管材・資材の<br/><span className="text-gradient">プロ向け卸売EC</span>
+              紙袋・包装資材の<br/><span className="text-gradient">プロ向け紙袋卸売</span>
             </h1>
-            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">ステンレス鋼管・バルブ・ポンプ・継手など、10,000点以上の配管資材をオンラインで。AIが最適な在庫提案と価格をご案内します。</p>
+            <p className="text-white/50 text-sm sm:text-base mb-6 max-w-lg leading-relaxed">手提げ袋・ラミネート袋・ギフト袋・宅配袋など、200種類以上の紙袋をオンラインで。小ロットから大量注文まで、AIが最適な提案をご案内します。</p>
             <div className="flex gap-3">
               <button onClick={() => document.getElementById('products')?.scrollIntoView({behavior:'smooth'})} className="btn-primary px-6 py-3 text-sm font-bold" style={{background:'var(--amber-500)'}}>商品を見る ↓</button>
               <button onClick={() => navigate("buyer")} className="px-6 py-3 border border-white/20 text-white/80 rounded text-sm font-medium hover:bg-white/10 transition" style={{borderRadius:'var(--radius)'}}>マイページ</button>
@@ -166,7 +176,7 @@ const LandingPage = () => {
 
       {/* ── KPI Strip ── */}
       <div className="container -mt-5 relative z-20 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[{v:"10,000+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"AI",l:"在庫自動提案",Ic:Icons.brain}].map((k,i) => (
+        {[{v:"200+",l:"取扱商品数",Ic:Icons.package},{v:"翌日",l:"最短配送",Ic:Icons.truck},{v:"24h",l:"受注対応",Ic:Icons.bell},{v:"AI",l:"在庫自動提案",Ic:Icons.brain}].map((k,i) => (
           <div key={i} className="card p-4 flex items-center gap-3 animate-fade-up" style={{animationDelay:`${i*0.08}s`}}>
             <k.Ic size={24}/>
             <div><p className="font-display font-extrabold text-lg" style={{color:'var(--navy-900)'}}>{k.v}</p><p className="text-xs" style={{color:'var(--slate-400)'}}>{k.l}</p></div>
@@ -1142,7 +1152,7 @@ const ProcurementPage = () => (
       {[{l:"発注総数",v:"24件",c:"今月: 8件"},{l:"今月の仕入れ額",v:`¥${fmt(3850000)}`,c:`累計: ¥${fmt(46200000)}`},{l:"処理待ち",v:"3件"},{l:"納品待ち",v:"5件"}].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p>{k.c&&<span className="text-xs text-gray-500">{k.c}</span>}</div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">仕入れ先一覧</h3>
-      {[{n:"日本製鉄株式会社",c:"田中 太郎",t:"月末締め翌月末払い"},{n:"三菱マテリアル株式会社",c:"佐藤 花子",t:"月末締め翌月15日払い"},{n:"キッツ株式会社",c:"鈴木 一郎",t:"月末締め翌月末払い"},{n:"クボタケミックス株式会社",c:"山田 次郎",t:"月末締め翌月20日払い"}].map((s,i)=><div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2"><div><p className="text-sm font-medium">{s.n}</p><p className="text-xs text-gray-500">{s.c}</p></div><span className="text-xs text-gray-400">{s.t}</span></div>)}
+      {[{n:"マルタカパルプ株式会社",c:"田中 太郎",t:"月末締め翌月末払い"},{n:"大昭和紙工産業株式会社",c:"佐藤 花子",t:"月末締め翌月15日払い"},{n:"福助工業株式会社",c:"鈴木 一郎",t:"月末締め翌月末払い"},{n:"シモジマ株式会社",c:"山田 次郎",t:"月末締め翌月20日払い"}].map((s,i)=><div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2"><div><p className="text-sm font-medium">{s.n}</p><p className="text-xs text-gray-500">{s.c}</p></div><span className="text-xs text-gray-400">{s.t}</span></div>)}
     </div>
   </div>
 );
@@ -1151,8 +1161,8 @@ const ProcurementPage = () => (
 const PricingPage = () => { const { customers } = useApp(); return (
   <div className="space-y-4">
     <h2 className="font-semibold text-sm">価格・掛率管理</h2>
-    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (ステンレス鋼管)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
-    <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(4800*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
+    <div className="bg-white rounded-xl border overflow-x-auto"><table className="w-full"><thead className="bg-gray-50"><tr>{["顧客","ティア","掛率","適用価格例 (クラフト手提げ袋)","操作"].map(h=><th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}</tr></thead>
+    <tbody>{customers.map(c=>{const rate=c.tier==="プラチナ"?0.85:c.tier==="ゴールド"?0.88:c.tier==="シルバー"?0.92:0.95;return<tr key={c.id} className="border-t hover:bg-gray-50"><td className="px-4 py-2.5 text-sm font-medium">{c.companyName}</td><td className="px-4 py-2.5"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[c.tier]}`}>{c.tier}</span></td><td className="px-4 py-2.5 text-sm font-bold text-blue-600">{(rate*100).toFixed(0)}%</td><td className="px-4 py-2.5 text-sm">¥{fmt(Math.round(18*rate))}</td><td className="px-4 py-2.5"><button onClick={()=>alert("掛率変更フォームを表示します")} className="text-xs text-blue-600 hover:underline">掛率を変更</button></td></tr>;})}</tbody></table></div>
   </div>
 );};
 
@@ -1164,7 +1174,7 @@ const AIAnalyticsPage = () => (
       {[{l:"売れ筋分析",d:"過去データから売れ筋商品を予測し、在庫戦略を提案します。",c:"#2563EB"},{l:"在庫最適化",d:"需要予測に基づき、適正在庫量と発注タイミングを提案します。",c:"#16A34A"},{l:"価格戦略",d:"市場分析と競合比較から最適な価格設定を提案します。",c:"#F97316"},{l:"利益率改善",d:"コスト分析と販売データから利益率改善策を提案します。",c:"#7C3AED"}].map((card,i)=><div key={i} className="bg-white rounded-xl border p-4 hover:shadow-md transition cursor-pointer"><h3 className="font-semibold text-sm mb-1" style={{color:card.c}}>{card.l}</h3><p className="text-xs text-gray-500 mb-3">{card.d}</p><button onClick={()=>alert(card.l + "の分析結果を表示します")} className="text-xs font-medium" style={{color:card.c}}>分析を見る →</button></div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">AIレコメンデーション</h3>
-      {[{t:"銅管 25A の緊急発注を推奨",d:"現在在庫18本。過去のトレンドから来週需要急増が予測されます。50本の追加発注を推奨。",tag:"欠品防止",c:"#DC2626"},{t:"VLP管 100A の販促キャンペーン実施",d:"在庫回転率が低下。期間限定10%割引で在庫削減と売上増加が見込めます。",tag:"在庫最適化",c:"#F59E0B"},{t:"ステンレス鋼管の価格見直し",d:"競合比較の結果、5%の価格調整で売上15%増加が見込めます。",tag:"売上増加",c:"#16A34A"}].map((r,i)=><div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 border-l-4" style={{borderLeftColor:r.c}}><div className="flex items-center gap-2 mb-1"><span className="text-sm font-bold">{r.t}</span><span className="text-xs px-1.5 py-0.5 rounded" style={{backgroundColor:r.c+"15",color:r.c}}>{r.tag}</span></div><p className="text-xs text-gray-500 mb-2">{r.d}</p><button onClick={()=>alert(r.t + "\nを実行します")} className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium">実行</button></div>)}
+      {[{t:"クラフト手提げ袋 小の追加発注を推奨",d:"現在在庫が減少中。季節需要の増加が予測されます。2000枚の追加発注を推奨。",tag:"欠品防止",c:"#DC2626"},{t:"ラミネート袋シリーズのセット販促を提案",d:"マット&グロスのセット割引で単価アップと在庫回転率の改善が見込めます。",tag:"在庫最適化",c:"#F59E0B"},{t:"エコバッグ型紙袋の価格見直し",d:"環境意識の高まりで需要増。3%の価格調整で売上20%増加が見込めます。",tag:"売上増加",c:"#16A34A"}].map((r,i)=><div key={i} className="p-3 bg-gray-50 rounded-lg mb-2 border-l-4" style={{borderLeftColor:r.c}}><div className="flex items-center gap-2 mb-1"><span className="text-sm font-bold">{r.t}</span><span className="text-xs px-1.5 py-0.5 rounded" style={{backgroundColor:r.c+"15",color:r.c}}>{r.tag}</span></div><p className="text-xs text-gray-500 mb-2">{r.d}</p><button onClick={()=>alert(r.t + "\nを実行します")} className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium">実行</button></div>)}
     </div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">ビジネススコア</h3>
       <div className="text-center mb-4"><span className="text-4xl font-black text-blue-600">87</span><span className="text-sm text-gray-500 ml-1">/ 100</span></div>
@@ -1175,7 +1185,7 @@ const AIAnalyticsPage = () => (
 
 // AI Articles Page
 const AIArticlesPage = () => {
-  const arts = [{id:"a1",title:"配管材の選び方とメンテナンス方法",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：ステンレス鋼管シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
+  const arts = [{id:"a1",title:"紙袋の種類と選び方ガイド",category:"商品ガイド",status:"公開済",date:"2024-01-16",chars:3200},{id:"a2",title:"効率的な在庫管理のベストプラクティス",category:"業務改善",status:"公開済",date:"2024-01-17",chars:2800},{id:"a3",title:"新商品：エコ素材紙袋シリーズの特徴",category:"新商品紹介",status:"下書き",date:"2024-01-18",chars:1500}];
   return (<div className="space-y-4">
     <div className="flex items-center justify-between"><div><h2 className="font-semibold text-sm">AI記事生成</h2><p className="text-xs text-gray-500">AIを活用した記事の自動生成と管理</p></div><button onClick={()=>alert("AI記事生成フォームを表示します")} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium">新規記事生成</button></div>
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1188,7 +1198,7 @@ const AIArticlesPage = () => {
 
 // Chats Management Page
 const ChatsPage = () => {
-  const chats = [{id:"ch1",name:"山田太郎",company:"山田設備工業",msg:"在庫の確認をお願いします",time:"2分前",assignee:"佐藤",priority:"緊急",status:"対応中"},{id:"ch2",name:"鈴木花子",company:"鈴木管工",msg:"ありがとうございました！",time:"1時間前",assignee:"佐藤",priority:"完了",status:"解決済"},{id:"ch3",name:"田中一郎",company:"田中建設",msg:"見積もりをお願いします",time:"30分前",assignee:"山田",priority:"通常",status:"対応中"},{id:"ch4",name:"佐藤次郎",company:"佐藤設備",msg:"納期について教えてください",time:"5分前",assignee:"山田",priority:"通常",status:"対応中"}];
+  const chats = [{id:"ch1",name:"花田美咲",company:"花よし生花店",msg:"在庫の確認をお願いします",time:"2分前",assignee:"佐藤",priority:"緊急",status:"対応中"},{id:"ch2",name:"鈴木麻衣",company:"アパレルセレクト",msg:"ありがとうございました！",time:"1時間前",assignee:"佐藤",priority:"完了",status:"解決済"},{id:"ch3",name:"田中裕介",company:"ワインショップ",msg:"見積もりをお願いします",time:"30分前",assignee:"山田",priority:"通常",status:"対応中"},{id:"ch4",name:"佐藤シェフ",company:"ルミエール",msg:"納期について教えてください",time:"5分前",assignee:"山田",priority:"通常",status:"対応中"}];
   const [sel,setSel] = useState(null);
   return (<div className="space-y-4">
     <div><h2 className="font-semibold text-sm">チャット管理</h2><p className="text-xs text-gray-500">顧客とのチャットセッションの管理と対応</p></div>
@@ -1242,7 +1252,7 @@ const BuyerLayout = ({children}) => {
 const BuyerTopPage = () => {
   const {navigate, products} = useApp();
   return (<div className="space-y-6">
-    <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">配管材・資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
+    <div className="bg-gray-900 rounded-xl p-8 text-white"><h1 className="text-2xl font-black mb-2">紙袋・包装資材のオンライン発注</h1><p className="text-white/70 text-sm mb-4">24時間いつでも発注可能。AIが在庫状況と最適な提案をご案内します。</p><button onClick={()=>navigate("buyer/products")} className="px-6 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold">商品を見る →</button></div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[{l:"注文・発送について",Ic:Icons.truck},{l:"商品について",Ic:Icons.package},{l:"在庫・納期について",Ic:Icons.inventory},{l:"価格・見積について",Ic:Icons.dollar}].map((c,i)=><button key={i} onClick={()=>navigate("buyer/chat")} className="bg-white rounded-xl border p-4 text-center hover:shadow-md transition"><div className="mb-2"><c.Ic size={24}/></div><p className="text-xs font-medium">{c.l}</p></button>)}</div>
     <div className="bg-white rounded-xl border p-4"><h3 className="font-semibold text-sm mb-3">人気商品</h3><div className="grid grid-cols-2 md:grid-cols-4 gap-3">{products.slice(0,4).map(p=><div key={p.id} onClick={()=>navigate("buyer/products")} className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:shadow transition"><div className="flex justify-center mb-2"><CategoryIcon category={p.category} size={36} /></div><p className="text-xs font-medium truncate">{p.name}</p><p className="text-sm font-bold text-blue-600">¥{fmt(p.price)}</p></div>)}</div></div>
   </div>);
@@ -1281,7 +1291,7 @@ const BuyerChatPage = () => {
 };
 
 const BuyerAccountPage = () => (<div className="space-y-4"><h2 className="font-semibold text-sm">アカウント</h2>
-  <div className="bg-white rounded-xl border p-5 max-w-xl">{[{l:"会社名",v:"山田設備工業株式会社"},{l:"担当者",v:"山田 太郎"},{l:"メール",v:"yamada@yamada-setsubi.jp"},{l:"電話番号",v:"03-1234-5678"},{l:"住所",v:"東京都品川区大崎1-2-3"},{l:"ティア",v:"プラチナ"}].map((f,i)=><div key={i} className="flex items-center justify-between py-2 border-b last:border-0"><span className="text-sm text-gray-500">{f.l}</span><span className="text-sm font-medium">{f.v}</span></div>)}</div>
+  <div className="bg-white rounded-xl border p-5 max-w-xl">{[{l:"会社名",v:"花よし生花店"},{l:"担当者",v:"花田 美咲"},{l:"メール",v:"hanada@hanayoshi.jp"},{l:"電話番号",v:"03-5555-1234"},{l:"住所",v:"東京都渋谷区神宮前3-10-8"},{l:"ティア",v:"プラチナ"}].map((f,i)=><div key={i} className="flex items-center justify-between py-2 border-b last:border-0"><span className="text-sm text-gray-500">{f.l}</span><span className="text-sm font-medium">{f.v}</span></div>)}</div>
 </div>);
 
 // Helper computed values for payments page
@@ -1299,7 +1309,7 @@ const AIChat = () => {
     chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
   }, [messages]);
 
-  const systemPrompt = `あなたは「シンガタ」の店舗管理AIアシスタントです。配管材・資材の卸売ECプラットフォームの管理者を支援します。
+  const systemPrompt = `あなたは「シンガタ」の店舗管理AIアシスタントです。紙袋・包装資材の卸売ECプラットフォームの管理者を支援します。
 
 現在のストアデータ:
 - 商品数: ${(ctxProducts||PRODUCTS).length}件

@@ -26,76 +26,110 @@ export const CategoryIcon = ({ category, size = 48, color = "currentColor" }) =>
   const stroke = { fill: "none", stroke: color, strokeWidth: 1.5, strokeLinecap: "square" };
 
   switch (category) {
-    case "配管材":
+    case "手提げ袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <rect x="2" y="9" width="20" height="6"/>
-          <line x1="5"  y1="9" x2="5"  y2="15"/>
-          <line x1="8"  y1="9" x2="8"  y2="15"/>
-          <line x1="11" y1="9" x2="11" y2="15"/>
-          <line x1="14" y1="9" x2="14" y2="15"/>
-          <line x1="17" y1="9" x2="17" y2="15"/>
+          <path d="M6 7 L6 20 L18 20 L18 7"/>
+          <path d="M9 7 C9 4 9 3 12 3 C15 3 15 4 15 7"/>
+          <line x1="6" y1="7" x2="18" y2="7"/>
         </svg>
       );
-    case "バルブ":
+    case "カラー袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <circle cx={cx} cy={cy} r="5"/>
-          <line x1="2" y1="12" x2="7"  y2="12"/>
-          <line x1="17" y1="12" x2="22" y2="12"/>
-          <line x1="12" y1="3" x2="12" y2="7"/>
-          <line x1="9"  y1="3" x2="15" y2="3"/>
+          <path d="M5 7 L5 20 L19 20 L19 7"/>
+          <path d="M9 7 C9 4 9 3 12 3 C15 3 15 4 15 7"/>
+          <line x1="5" y1="7" x2="19" y2="7"/>
+          <line x1="5" y1="13" x2="19" y2="13"/>
+          <circle cx="12" cy="10" r="1.5"/>
         </svg>
       );
-    case "ポンプ":
+    case "ラミネート袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <circle cx={cx} cy="13" r="6"/>
-          <circle cx={cx} cy="13" r="2"/>
-          <rect x="10" y="2" width="4" height="4"/>
-          <line x1="12" y1="6" x2="12" y2="7"/>
+          <path d="M5 6 L5 21 L19 21 L19 6"/>
+          <path d="M8 6 C8 3 8 2 12 2 C16 2 16 3 16 6"/>
+          <rect x="5" y="6" width="14" height="3"/>
+          <rect x="8" y="12" width="8" height="5" rx="1"/>
         </svg>
       );
-    case "保温材":
+    case "ボトル袋":
+      return (
+        <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
+          <path d="M8 5 L8 21 L16 21 L16 5"/>
+          <line x1="8" y1="5" x2="16" y2="5"/>
+          <path d="M10 5 L10 2 L14 2 L14 5"/>
+          <ellipse cx="12" cy="13" rx="3" ry="5"/>
+        </svg>
+      );
+    case "平袋":
+      return (
+        <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
+          <rect x="4" y="4" width="16" height="16"/>
+          <line x1="4" y1="8" x2="20" y2="8"/>
+        </svg>
+      );
+    case "角底袋":
+      return (
+        <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
+          <path d="M5 4 L5 20 L19 20 L19 4 Z"/>
+          <path d="M5 4 L8 7 L16 7 L19 4"/>
+          <line x1="8" y1="7" x2="8" y2="20"/>
+          <line x1="16" y1="7" x2="16" y2="20"/>
+        </svg>
+      );
+    case "宅配袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
           <rect x="3" y="5" width="18" height="14"/>
-          <line x1="3" y1="9"  x2="21" y2="9"/>
-          <line x1="3" y1="13" x2="21" y2="13"/>
-          <line x1="3" y1="17" x2="21" y2="17"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <path d="M12 9 L12 13 L16 13"/>
+          <line x1="15" y1="5" x2="15" y2="9"/>
         </svg>
       );
-    case "フランジ":
+    case "ギフト袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <circle cx={cx} cy={cy} r="9"/>
-          <circle cx={cx} cy={cy} r="4"/>
-          <circle cx="12" cy="5"  r="1"/>
-          <circle cx="19" cy="12" r="1"/>
-          <circle cx="12" cy="19" r="1"/>
-          <circle cx="5"  cy="12" r="1"/>
+          <path d="M6 7 L6 20 L18 20 L18 7"/>
+          <line x1="6" y1="7" x2="18" y2="7"/>
+          <line x1="12" y1="7" x2="12" y2="20"/>
+          <path d="M12 7 C10 5 8 4 9 3 C10 2 11 3 12 5"/>
+          <path d="M12 7 C14 5 16 4 15 3 C14 2 13 3 12 5"/>
         </svg>
       );
-    case "ガスケット":
+    case "食品用袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <circle cx={cx} cy={cy} r="9"/>
-          <circle cx={cx} cy={cy} r="5" strokeDasharray="2 2"/>
+          <path d="M5 6 L5 20 L19 20 L19 6"/>
+          <line x1="5" y1="6" x2="19" y2="6"/>
+          <rect x="8" y="10" width="8" height="6" rx="1" strokeDasharray="2 1"/>
         </svg>
       );
-    case "締結材":
+    case "フラワー袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <polygon points="7,3 17,3 20,8 17,13 7,13 4,8"/>
-          <line x1="12" y1="13" x2="12" y2="21"/>
-          <line x1="10" y1="16" x2="14" y2="16"/>
-          <line x1="10" y1="19" x2="14" y2="19"/>
+          <path d="M6 8 L4 21 L20 21 L18 8"/>
+          <line x1="6" y1="8" x2="18" y2="8"/>
+          <circle cx="12" cy="5" r="2"/>
+          <line x1="10" y1="6" x2="8" y2="8"/>
+          <line x1="14" y1="6" x2="16" y2="8"/>
         </svg>
       );
-    case "継手":
+    case "エコ袋":
       return (
         <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
-          <path d="M 3 9 L 9 9 L 9 3 L 15 3 L 15 9 L 21 9 L 21 15 L 15 15 L 15 21 L 9 21 L 9 15 L 3 15 Z"/>
+          <path d="M6 7 L6 20 L18 20 L18 7"/>
+          <path d="M9 7 C9 4 9 3 12 3 C15 3 15 4 15 7"/>
+          <path d="M10 14 C10 11 14 11 14 14 C14 17 10 17 10 14"/>
+          <line x1="12" y1="14" x2="12" y2="18"/>
+        </svg>
+      );
+    case "透明袋":
+      return (
+        <svg width={s} height={s} viewBox="0 0 24 24" {...stroke}>
+          <rect x="4" y="3" width="16" height="18" strokeDasharray="3 2"/>
+          <line x1="4" y1="6" x2="20" y2="6"/>
+          <path d="M16 6 L16 3"/>
         </svg>
       );
     default:
