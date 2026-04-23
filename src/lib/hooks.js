@@ -233,3 +233,60 @@ function guardedAsync(fn) {
     return fn(...args);
   };
 }
+
+// ═══ Billing Settings ═══
+export function useBillingSettings() {
+  return useSupabase('billing_settings', { order: 'created_at', asc: true });
+}
+
+export async function upsertBillingSetting(customerId, settings) {
+  return supabase.from('billing_settings').upsert({
+    customer_id: customerId,
+    ...settings,
+  }, { onConflict: 'customer_id' }).select().single();
+}
+
+// ═══ Invoices ═══
+export function useInvoices() {
+  return useSupabase('invoices', { order: 'created_at' });
+}
+
+export async function createInvoice({ customerName, customerId, periodStart, periodEnd, items, taxRate = 10 }) {
+  const num = `INV-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+  const subtotal = items.reduce((s, i) => s + i.amount, 0);
+  const taxAmount = Math.floor(subtotal * taxRate / 100);
+
+  const { data: invoice, error } = await supabase
+    .from('invoices')
+    .insert({
+      invoice_number: num,
+      customer_id: customerId,
+      customer_name: customerName,
+      billing_period_start: periodStart,
+      billing_period_end: periodEnd,
+      subtotal,
+      tax_amount: taxAmount,
+      total: subtotal + taxAmount,
+      status: '発行済',
+      issued_date: new Date().toISOString().split('T')[0],
+      due_date: periodEnd,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  if (items.length > 0) {
+    await supabase.from('invoice_items').insert(
+      items.map(i => ({ invoice_id: invoice.id, ...i }))
+    );
+  }
+  return invoice;
+}
+
+export async function updateInvoiceStatus(id, status, paidAmount) {
+  const updates = { status };
+  if (status === '入金済') updates.paid_date = new Date().toISOString().split('T')[0];
+  if (paidAmount !== undefined) updates.paid_amount = paidAmount;
+  return supabase.from('invoices').update(updates).eq('id', id);
+}

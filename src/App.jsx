@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 import { supabase } from "./lib/supabase";
-import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange } from "./lib/hooks";
+import { useProducts, useCustomers, useOrders, useArticles, useChatSessions, useSuppliers, useMasterData, createOrder, updateOrderStatus, updateProduct, updateStock, createCustomer, createArticle, sendChatMessage, logInventoryChange, useBillingSettings, useInvoices, upsertBillingSetting, createInvoice, updateInvoiceStatus } from "./lib/hooks";
 import { CategoryIcon, Icons } from "./warehouse-icons";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -419,6 +419,7 @@ const OperatorLayout = ({ children }) => {
     { group: "受注・顧客管理", color: "#FACC15", items: [
       { id: "operator/orders", label: "受注管理", icon: Icons.orders },
       { id: "operator/payments", label: "決済管理", icon: Icons.dollar },
+      { id: "operator/billing", label: "請求管理", icon: Icons.orders },
       { id: "operator/shipping", label: "発送管理", icon: Icons.truck },
       { id: "operator/analytics", label: "売上分析", icon: Icons.chart },
       { id: "operator/customers", label: "顧客管理", icon: Icons.users },
@@ -902,6 +903,158 @@ const SettingsPage = () => (
   </div>
 );
 
+// ═══ Billing Management Page (BtoB請求管理) ═══
+const BillingPage = () => {
+  const { customers } = useApp();
+  const { data: billingSettings, refetch: refetchSettings } = useBillingSettings();
+  const { data: invoices, refetch: refetchInvoices } = useInvoices();
+  const [tab, setTab] = useState("invoices");
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [settingsForm, setSettingsForm] = useState({});
+
+  const CYCLES = ["月末締め","15日締め","20日締め","即日","カスタム"];
+  const DUE_TYPES = ["翌月末","翌月15日","翌月20日","翌々月末","30日後","60日後","即日"];
+  const INV_STATUSES = { "未発行":"bg-gray-100 text-gray-600", "発行済":"bg-blue-100 text-blue-800", "送付済":"bg-purple-100 text-purple-800", "入金済":"bg-green-100 text-green-800", "一部入金":"bg-yellow-100 text-yellow-800", "延滞":"bg-red-100 text-red-800" };
+
+  const handleSaveSettings = async () => {
+    if (!editingCustomer) return;
+    await upsertBillingSetting(editingCustomer, settingsForm);
+    refetchSettings();
+    setEditingCustomer(null);
+    alert("請求設定を保存しました");
+  };
+
+  const handleGenerateInvoice = async (c) => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    await createInvoice({ customerName: c.companyName, customerId: c.id, periodStart: start, periodEnd: end, items: [{ description: `${now.getMonth()+1}月分請求`, quantity: 1, unit_price: c.balance || 100000, amount: c.balance || 100000 }] });
+    refetchInvoices();
+    alert(`${c.companyName} の請求書を発行しました`);
+  };
+
+  const handleStatusChange = async (inv, newStatus) => {
+    await updateInvoiceStatus(inv.id, newStatus, newStatus === "入金済" ? inv.total : undefined);
+    refetchInvoices();
+  };
+
+  const getSettingsForCustomer = (cid) => billingSettings.find(b => b.customer_id === cid);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div><h2 className="font-semibold text-sm">請求管理</h2><p className="text-xs text-gray-500">会社ごとの請求設定・請求書発行・入金管理</p></div>
+      </div>
+
+      <div className="flex gap-2">
+        {["invoices","settings"].map(t => (
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tab === t ? "bg-blue-600 text-white" : "bg-white border text-gray-600"}`}>
+            {t === "invoices" ? "請求書一覧" : "会社別請求設定"}
+          </button>
+        ))}
+      </div>
+
+      {tab === "settings" && (
+        <div className="space-y-3">
+          <div className="bg-white rounded-xl border overflow-x-auto">
+            <table className="w-full"><thead className="bg-gray-50"><tr>
+              {["会社名","締め日","支払期日","自動発行","税率","操作"].map(h => <th key={h} className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}
+            </tr></thead>
+            <tbody>{customers.map(c => {
+              const s = getSettingsForCustomer(c.id);
+              return (
+                <tr key={c.id} className="border-t hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium">{c.companyName}</td>
+                  <td className="px-4 py-3 text-sm">{s?.billing_cycle || "未設定"}</td>
+                  <td className="px-4 py-3 text-sm">{s?.payment_due_type || "未設定"}</td>
+                  <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded ${s?.auto_generate ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}>{s?.auto_generate ? "ON" : "OFF"}</span></td>
+                  <td className="px-4 py-3 text-sm">{s?.tax_rate || 10}%</td>
+                  <td className="px-4 py-3 flex gap-2">
+                    <button onClick={() => { setEditingCustomer(c.id); setSettingsForm({ billing_cycle: s?.billing_cycle || "月末締め", payment_due_type: s?.payment_due_type || "翌月末", payment_due_days: s?.payment_due_days || 30, auto_generate: s?.auto_generate ?? true, tax_rate: s?.tax_rate || 10, closing_day: s?.closing_day || 0 }); }} className="text-xs text-blue-600 hover:underline">設定変更</button>
+                    <button onClick={() => handleGenerateInvoice(c)} className="text-xs text-green-600 hover:underline">請求書発行</button>
+                  </td>
+                </tr>
+              );
+            })}</tbody></table>
+          </div>
+
+          {editingCustomer && (
+            <div className="bg-white rounded-xl border p-5 space-y-4">
+              <h3 className="font-semibold text-sm border-b pb-2">{customers.find(c=>c.id===editingCustomer)?.companyName} の請求設定</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">締め日</label>
+                  <select value={settingsForm.billing_cycle} onChange={e => setSettingsForm({...settingsForm, billing_cycle: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                    {CYCLES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">支払期日</label>
+                  <select value={settingsForm.payment_due_type} onChange={e => setSettingsForm({...settingsForm, payment_due_type: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm">
+                    {DUE_TYPES.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">税率 (%)</label>
+                  <input type="number" value={settingsForm.tax_rate} onChange={e => setSettingsForm({...settingsForm, tax_rate: parseFloat(e.target.value)})} className="w-full border rounded-lg px-3 py-2 text-sm"/>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">カスタム締め日 (1-28)</label>
+                  <input type="number" min="0" max="28" value={settingsForm.closing_day} onChange={e => setSettingsForm({...settingsForm, closing_day: parseInt(e.target.value)})} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="0=月末"/>
+                </div>
+                <div className="flex items-center gap-2 pt-5">
+                  <input type="checkbox" checked={settingsForm.auto_generate} onChange={e => setSettingsForm({...settingsForm, auto_generate: e.target.checked})} className="w-4 h-4"/>
+                  <label className="text-sm">自動発行する</label>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button onClick={handleSaveSettings} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">保存</button>
+                <button onClick={() => setEditingCustomer(null)} className="px-4 py-2 bg-white border text-gray-600 rounded-lg text-sm">キャンセル</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === "invoices" && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { l:"総請求額", v:`¥${fmt(invoices.reduce((s,i)=>s+i.total,0))}` },
+              { l:"入金済", v:`¥${fmt(invoices.filter(i=>i.status==="入金済").reduce((s,i)=>s+i.total,0))}` },
+              { l:"未入金", v:`¥${fmt(invoices.filter(i=>i.status!=="入金済").reduce((s,i)=>s+i.total,0))}` },
+              { l:"請求書数", v:`${invoices.length}件` },
+            ].map((k,i)=><div key={i} className="bg-white rounded-xl border p-4"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{k.l}</p><p className="text-xl font-bold">{k.v}</p></div>)}
+          </div>
+          <div className="bg-white rounded-xl border overflow-x-auto">
+            <table className="w-full"><thead className="bg-gray-50"><tr>
+              {["請求番号","顧客","期間","小計","税額","合計","ステータス","発行日","支払期日","操作"].map(h => <th key={h} className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>)}
+            </tr></thead>
+            <tbody>{invoices.map(inv => (
+              <tr key={inv.id} className="border-t hover:bg-gray-50">
+                <td className="px-3 py-2.5 text-sm font-medium text-blue-600">{inv.invoice_number}</td>
+                <td className="px-3 py-2.5 text-sm">{inv.customer_name}</td>
+                <td className="px-3 py-2.5 text-xs text-gray-500">{inv.billing_period_start}〜{inv.billing_period_end}</td>
+                <td className="px-3 py-2.5 text-sm">¥{fmt(inv.subtotal)}</td>
+                <td className="px-3 py-2.5 text-sm text-gray-500">¥{fmt(inv.tax_amount)}</td>
+                <td className="px-3 py-2.5 text-sm font-bold">¥{fmt(inv.total)}</td>
+                <td className="px-3 py-2.5"><span className={`text-xs px-2 py-0.5 rounded font-medium ${INV_STATUSES[inv.status]||"bg-gray-100 text-gray-600"}`}>{inv.status}</span></td>
+                <td className="px-3 py-2.5 text-sm text-gray-500">{inv.issued_date||"—"}</td>
+                <td className="px-3 py-2.5 text-sm text-gray-500">{inv.due_date||"—"}</td>
+                <td className="px-3 py-2.5">
+                  <select value={inv.status} onChange={e => handleStatusChange(inv, e.target.value)} className="text-xs border rounded px-1.5 py-1">
+                    {Object.keys(INV_STATUSES).map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </td>
+              </tr>
+            ))}</tbody></table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Payments Page
 const PaymentsPage = () => {
   const { orders } = useApp();
@@ -1207,6 +1360,7 @@ const OperatorPage = () => {
     "operator": <DashboardPage />,
     "operator/orders": <OrdersPage />,
     "operator/payments": <PaymentsPage />,
+    "operator/billing": <BillingPage />,
     "operator/shipping": <ShippingPage />,
     "operator/products": <ProductsPage />,
     "operator/customers": <CustomersPage />,
@@ -1308,7 +1462,7 @@ export default function App() {
       landing: "シンガタ株式会社 - BtoB卸デモサイト",
       ec: "商品一覧 | シンガタ", cart: "カート | シンガタ",
       operator: "ダッシュボード | シンガタ管理",
-      "operator/orders": "受注管理 | シンガタ", "operator/payments": "決済管理 | シンガタ",
+      "operator/orders": "受注管理 | シンガタ", "operator/payments": "決済管理 | シンガタ", "operator/billing": "請求管理 | シンガタ",
       "operator/shipping": "発送管理 | シンガタ", "operator/products": "商品管理 | シンガタ",
       "operator/inventory": "在庫管理 | シンガタ", "operator/procurement": "仕入管理 | シンガタ",
       "operator/analytics": "売上分析 | シンガタ", "operator/customers": "顧客管理 | シンガタ",
